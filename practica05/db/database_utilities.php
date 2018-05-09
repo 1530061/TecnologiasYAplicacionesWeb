@@ -32,7 +32,7 @@
 		$r = $conn->query($sql);
 		if($r->num_rows)
 			return $r;
-		return false;
+		return [];
 	}
 
 	//Funcion que permite realizar una busqueda de un usuario para obtener todos sus atributos mediante su id.
@@ -42,6 +42,6 @@
 		$r = $conn->query($sql);
 		if($r->num_rows)
 			return mysqli_fetch_assoc($r);
-		return false;
+		return [];
 	}
 ?>
