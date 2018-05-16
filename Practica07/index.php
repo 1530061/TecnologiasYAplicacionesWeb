@@ -2,6 +2,7 @@
   session_start();
   require_once("db/database_utilities.php");
 
+  //Se revisa que la sesion halla sido iniciada previamente
   if(!isset($_SESSION['username'])){
       header("location: login.php");
   }

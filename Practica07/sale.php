@@ -2,22 +2,26 @@
   session_start();
   require_once("db/database_utilities.php");
 
+  //Se revisa que la sesion este inciada
   if(!isset($_SESSION['username'])){
       header("location: login.php");
   }
 
+  //Se checa si existe 'data' en post que corresponde a un array que se obtiene con todos los registros
+  //de la venta posteriormente se realiza el guardado de la misma
   if(isset($_POST)){
       if(isset($_POST['data'])){
       $data = $_POST['data'];
-      echo(var_dump($data));
       saveSale($data);
       exit();
      
     }
   }
 
+  //Se obtiene el nombre de los productos para llenar el select de la interfaz
   $products = get_productNames();   
 
+  //Se llena el select que muestra los nombres y el id de los productos registrados en el sistema.
   $select="<select id='sel_prod'>";
   for($i=0;$i<count($products);$i++){
      $select=$select.'<option value="'.$products[$i]['precio'].'">'.$products[$i]['id'].'-'.$products[$i]['nombre'].'</option>';
@@ -25,19 +29,6 @@
   $select=$select.'</select>';
 
   $count=0;
-
-  $new_row='<tr>
-              <td>
-                <select name="sel_prod_0" id="sel_prod_0">'
-                .$select.
-              '</td>
-              <td>
-                <input type="number" name="txt_cant_0" min="0" id="txt_cant_0">
-              </td>
-              <td style="width:50px;">
-                <button id="btn_nu_0" value="Click" onclick="add_row()">Agregar</button>
-              </td>
-            </tr>';
 
 ?>
 <!doctype html>
@@ -125,12 +116,16 @@
       var count=0;
       var details=[];
 
+      //Funcion que permite añadir una nueva fila a la tabla del fondo, permitiendo tambien
+      //agregar cantidades a los productos que ya se encuentran actualmente en la tabla.
       function add_row(){
+        //Llamado de componentes
         var e = document.getElementById("sel_prod");
         var c = document.getElementById("txt_cant");
         var table = document.getElementById("tab_details");
         var txt_total = document.getElementById("txt_total");
 
+        //Obteniendo todos los valores
         var split = e.options[e.selectedIndex].text.split("-");
         var id=split[0];
         var nombre=split[1];
@@ -140,6 +135,7 @@
 
         var total=0;
         var found=false;
+        //En caso de que ya exista, el registro existente se modifica y se agregan las cantidades
         for(var i=0;i<details.length;i++){
           if(details[i][0]==id){
             details[i][2]=details[i][2]+cantidad;
@@ -163,7 +159,7 @@
         txt_total.innerHTML = "Total: "+total;
       }
 
-      
+      //Se envia la matriz que contiene la tabla por post a sale.php donde se continua con su guardado mediante PHP.
       var sendData = function() {
         if(details.length==0){
           alert("Por favor, ingrese algun producto en la venta primero");
@@ -175,7 +171,6 @@
             $.post('sale.php', {
               data: details
             }, function(response) {
-              //console.log(response);
             });
             alert("Venta realizada exitosamente");
             window.location.href = 'sale.php';

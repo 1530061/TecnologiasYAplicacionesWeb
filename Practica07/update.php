@@ -2,6 +2,7 @@
 session_start();
 require_once("db/database_utilities.php");
 
+//Se revisa que la sesion halla sido iniciada
 if(!isset($_SESSION['username'])){
     header("location: login.php");
 }
@@ -10,7 +11,7 @@ $t = $_GET["t"];
 $id = isset( $_GET['id'] ) ? $_GET['id'] : '';  //Se revisa que el id del usuario se encuentre mediante el metodo get.
 $r = search($id,$t); //Se realiza una busqueda en la base de datos donde se obtienen los atributos del registro con el id ingresado.
 
-
+//Dependiendo del caso que se este usando el formulario se realiza un guardado de usuario o de producto.
 if($t==1){
   if(isset($_POST['name']) && isset($_POST['last_name']) && isset($_POST['ap_m']) && isset($_POST['user']) && isset($_POST['password'])){
     update_user($id,$_POST['name'],$_POST['last_name'],$_POST['ap_m'],$_POST['user'],md5($_POST['password']));

@@ -2,10 +2,12 @@
   session_start();
   require_once("db/database_utilities.php");
 
+  //Se revisa que la sesion halla sido iniciada previamente
   if(!isset($_SESSION['username'])){
       header("location: login.php");
   }
 
+  //Se obtiene el id de la venta para posteriormente traerlo con la funcion getInfoFromSale y mostrarlo en la tabla posterior.
   if(isset($_GET['id']))
     $r=getInfoFromSale($_GET['id']);
   
@@ -39,7 +41,8 @@
                   <th> Importe </th>
 
                 </tr>
-                <?php for($i=0;$i<count($r);$i++){ ?>
+                <?php //Impresion de la tabla, de la matriz resultante de la funcion que obtiene toda la informacion de la venta.
+                  for($i=0;$i<count($r);$i++){ ?>
                 <tr>
                   <?php for($j=0;$j<5;$j++){?>
                     <td><?php echo($r[$i][$j]);?> </td>

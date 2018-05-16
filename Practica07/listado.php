@@ -3,21 +3,22 @@
 session_start();
 include_once('db/database_utilities.php');
 
+//Se revisa que la sesion halla sido iniciada previamente
 if(!isset($_SESSION['username'])){
     header("location: login.php");
 }
 
-$t = $_GET["t"];
+$t = $_GET["t"];  //Se obtiene el tipo que se le estara dando uso al formulario
 
-$user_access = getAll($t);           //Se obtienen todos los registros y se llena el array mediante los usuarios encontrados en la base de datos.
-$total_users = count($user_access); //Se hace un conteo de cuantos registros se tinen en el sistema.
+$user_access = getAll($t);           //Se obtienen todos los registros y se llena el array mediante los registros encontrados en la base de datos.
+$total_users = count($user_access);   //Se hace un conteo de cuantos registros se tinen en el sistema.
 ?>
 <!doctype html>
 <html class="no-js" lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Curso PHP |  Bienvenidos</title>
+    <title>Practica 07 |  Gestion </title>
     <link rel="stylesheet" href="./css/foundation.css" />
     <script src="./js/vendor/modernizr.js"></script>
   </head>
@@ -49,9 +50,11 @@ $total_users = count($user_access); //Se hace un conteo de cuantos registros se 
                   <tr>
                     <th width="200">Id</th>
                     <?php
+                      //Tablas y columnas correspondientes a las que se van a mostrar en la pagina
                       $tablas=[[],["nombre","apellido_paterno","apellido_materno","usuario"],["nombre","precio"]];
                       $nombres=[[],["Nombre","Apellido Paterno","Apellido Materno","Usuario"],["Nombre","Precio"]];
 
+                      //Se imprime cada resultado de cada fila
                       foreach($nombres[$t] as $n){
                         echo('<th width="250">'.$n.'</th>');
                       } 
@@ -61,11 +64,15 @@ $total_users = count($user_access); //Se hace un conteo de cuantos registros se 
                   </tr>
                 </thead>
                 <tbody>
-                  <?php foreach( $user_access as $id => $user ){ ?>
+                  <?php 
+                    //Se dependiendo de la tabla se imprimen sus filas
+                    foreach( $user_access as $id => $user ){ ?>
                   <tr>
+                    <?//Se imprime el id del registro actual?>
                     <td><?php echo(''.$user['id']); ?></td>
                     <?php
                       foreach($tablas[$t] as $n){
+                        //Se imprimen cada una de las columnas de la tabla
                         echo('<td>'.$user[$n].'</td>');
                       } 
                     ?>

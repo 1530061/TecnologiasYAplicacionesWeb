@@ -1,26 +1,30 @@
 <?php
   require_once("db/database_utilities.php");
 
+  //Se revisa si existe alguna cookie con los valores para inciar la sesion
   if(isset($_COOKIE) &&is_array($_COOKIE) && count($_COOKIE)>0 && isset($_COOKIE['username']) && $_COOKIE['username']!=null){
       session_start();
   }
 
+  //En caso de que la accion sea logout se elimina la variable sesion username
   if(isset($_GET['action']) && $_GET['action']=='logout'){
       unset($_SESSION['username']);
   }
 
+  //Se revisa que formu tenga valores post
   if (isset($_POST['formu'])){
-    //Imprime el array con los datos de acceso, una vez logueado
+    //Se checa si tienen usuario y password y ademas se revisa que el usuario y la password sean validos.
     if(isset($_POST['formu']['user']) && isset($_POST['formu']['pass']) && checkUserAndPass($_POST['formu']['pass'],$_POST['formu']['user'])){
         session_start();
         $_SESSION['username']=$_POST['formu']['user'];
-        //setcookie("username", $_POST['formu']['user']);
     }
   }
 
+  //En caso de exito se continua al index con la sesion iniciada
   if(isset($_SESSION['username'])){
     header("location: index.php");
   }else{
+    //Se vuelve a mostrar la pagina para ingresar las credencias del usuario
 ?>
 <!doctype html>
 <html class="no-js" lang="en">

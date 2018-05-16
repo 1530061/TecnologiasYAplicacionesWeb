@@ -2,12 +2,14 @@
   session_start();
   require_once("db/database_utilities.php");
 
-  $t=$_GET['t'];
+  $t=$_GET['t'];  //Se obtiene el tipo que se le estara dando uso al formulario
 
+  //Se revisa que la sesion halla sido iniciada previamente
   if(!isset($_SESSION['username'])){
       header("location: login.php");
   }
 
+  //Dependiendo de su tipo se muestra si se va a realizar un agregado de producto o un agregado de usuario
   if($t==1){
     if(isset($_POST['name']) && isset($_POST['last_name']) && isset($_POST['ap_m']) && isset($_POST['user']) && isset($_POST['password'])){
       if(add_user($_POST['name'],$_POST['last_name'],$_POST['ap_m'],$_POST['user'],$_POST['password'])){
@@ -48,7 +50,7 @@
         <div class="section-container tabs" data-section>
           <section class="section">
             <form method="POST" action="add.php?t=<?php echo($t);?>">
-              <?php
+              <?php //Imprimiendo los campos, con sus valores en caso de error
                 if($t==1){
               ?>
                 <label for="name">Nombre:</label>

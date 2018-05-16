@@ -2,13 +2,17 @@
   session_start();
   require_once("db/database_utilities.php");
 
+  //Se revisa que la sesion est iniciada
   if(!isset($_SESSION['username'])){
       header("location: login.php");
   }
 
+  //Se checa que se tenga el valor de la fecha en post y se hace uso de la funcion getAllInfoFromSales
   if(isset($_POST['date']))
+    //En caso de que se tenga una fecha
     $r=getAllInfoFromSales($_POST['date']);
   else
+    //En caso de que se quieran revisar todos
     $r=getAllInfoFromSales();
 ?>
 <!doctype html>
