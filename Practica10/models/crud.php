@@ -38,17 +38,6 @@ class Datos extends Conexion{
 
 	}
 
-
-
-
-
-
-
-
-
-
-
-
 	#INGRESO USUARIO
 	#-------------------------------------
 	public function ingresoUsuarioModel($datosModel, $tabla){
@@ -146,11 +135,93 @@ class Datos extends Conexion{
 
 	}
 
+	#BORRAR USUARIO
+	#------------------------------------
+	public function borrarProductoModel($datosModel, $tabla){
+
+		$stmt = Conexion::conectar()->prepare("DELETE FROM $tabla WHERE id = :id");
+		$stmt->bindParam(":id", $datosModel, PDO::PARAM_INT);
+
+		if($stmt->execute()){
+
+			return "success";
+
+		}
+
+		else{
+
+			return "error";
+
+		}
+
+		$stmt->close();
+
+	}
 
 
 
 
 
+	#ACTUALIZAR PRODUCTO
+	#-------------------------------------
+
+	public function actualizarProductoModel($datosModel, $tabla){
+
+		$stmt = Conexion::conectar()->prepare("UPDATE $tabla SET nombreProd = :nombreProd, descProduc = :descProduc, BuyPrice = :BuyPrice, SalePrice = :SalePrice, Proce = :Proce WHERE id = :id");
+
+		$stmt->bindParam(":nombreProd", $datosModel["nombreProd"], PDO::PARAM_STR);
+		$stmt->bindParam(":descProduc", $datosModel["descProduc"], PDO::PARAM_STR);
+		$stmt->bindParam(":BuyPrice", $datosModel["BuyPrice"], PDO::PARAM_STR);
+		$stmt->bindParam(":SalePrice", $datosModel["SalePrice"], PDO::PARAM_STR);
+		$stmt->bindParam(":Proce", $datosModel["Proce"], PDO::PARAM_STR);
+		$stmt->bindParam(":id", $datosModel["id"], PDO::PARAM_INT);
+
+		if($stmt->execute()){
+
+			return "success";
+
+		}
+
+		else{
+
+			return "error";
+
+		}
+
+		$stmt->close();
+
+	}
+
+	#VISTA PRODUCTO
+	#-------------------------------------
+
+	public function vistaProductoModel($tabla){
+
+		$stmt = Conexion::conectar()->prepare("SELECT id, nombreProd, descProduc, BuyPrice, SalePrice, Proce FROM $tabla");	
+		$stmt->execute();
+
+		#fetchAll(): Obtiene todas las filas de un conjunto de resultados asociado al objeto PDOStatement. 
+		return $stmt->fetchAll();
+
+		$stmt->close();
+
+	}
+
+
+	#EDITAR PRODUCTO
+	#-------------------------------------
+
+	public function editarProductoModel($datosModel, $tabla){
+
+		$stmt = Conexion::conectar()->prepare("SELECT id, nombreProd, descProduc, BuyPrice, SalePrice, Proce FROM $tabla WHERE id = :id");
+		$stmt->bindParam(":id", $datosModel, PDO::PARAM_INT);	
+		$stmt->execute();
+
+		return $stmt->fetch();
+
+		$stmt->close();
+
+	}
 
 
 #REGISTRO DE PRODUCTOS

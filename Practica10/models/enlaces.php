@@ -5,7 +5,7 @@ class Paginas{
 	public function enlacesPaginasModel($enlaces){
 
 
-		if($enlaces == "ingresar" || $enlaces == "usuarios" || $enlaces == "editar" || $enlaces == "salir" || $enlaces =="productos"){
+		if($enlaces == "registro_productos" || $enlaces == "ingresar" || $enlaces == "usuarios" || $enlaces == "editar" || $enlaces == "editar_productos" || $enlaces == "salir" || $enlaces =="productos"){
 
 			$module =  "views/modules/".$enlaces.".php";
 		
@@ -38,6 +38,12 @@ class Paginas{
 		else if($enlaces == "cambio"){
 
 			$module =  "views/modules/usuarios.php";
+		
+		}
+
+		else if($enlaces == "cambio_p"){
+
+			$module =  "views/modules/productos.php";
 		
 		}
 

@@ -12,32 +12,46 @@ if(!$_SESSION["validar"]){
 
 ?>
 
-<h1>REGISTRO DE PRODUCTOS</h1>
+<h1>USUARIOS</h1>
 
-<form method="post">
-	
-	<input type="text" placeholder="Product Name" name="nombreProd" required>
+	<table border="1">
+		
+		<thead>
+			
+			<tr>
+				<th>Nombre Producto</th>
+				<th>Descripcion Producto</th>
+				<th>Precio de Compra</th>
+				<th>Precio de Venta</th>
+				<th>Precio</th>
+				<th>Editar?</th>
+				<th>Eliminar?</th>
 
-	<input type="text" placeholder="Description" name="descProduc" required>
-	<input type="number" placeholder="Buy price" min="0" name="BuyPrice" required>
-	<input type="number" placeholder="Sale price" min="0" name="SalePrice" required>
-	<input type="number" placeholder="Price" min="0" name="Proce" required>
+			</tr>
 
-	<input type="submit" value="Enviar">
+		</thead>
 
-</form>
+		<tbody>
+			
+			<?php
+
+			$vistaProducto = new MvcController();
+			$vistaProducto -> vistaProductoController();
+			$vistaProducto -> borrarProductoController();
+
+			?>
+
+		</tbody>
+
+	</table>
 
 <?php
-//Enviar los datos al controlador MvcController (es la clase principal de controller.php)
-$registro = new MvcController();
-//se invoca la función registroProductosController de la clase MvcController:
-$registro -> registroProductosController();
 
 if(isset($_GET["action"])){
 
-	if($_GET["action"] == "done"){
+	if($_GET["action"] == "cambio"){
 
-		echo "Registro Exitoso";
+		echo "Cambio Exitoso";
 	
 	}
 

@@ -130,6 +130,30 @@ class MvcController{
 
 	}
 
+		#VISTA DE USUARIOS
+	#------------------------------------
+
+	public function vistaProductoController(){
+
+		$respuesta = Datos::vistaProductoModel("products");
+
+		#El constructor foreach proporciona un modo sencillo de iterar sobre arrays. foreach funciona sólo sobre arrays y objetos, y emitirá un error al intentar usarlo con una variable de un tipo diferente de datos o una variable no inicializada.
+
+		foreach($respuesta as $row => $item){
+		echo'<tr>
+				<td>'.$item["nombreProd"].'</td>
+				<td>'.$item["descProduc"].'</td>
+				<td>'.$item["BuyPrice"].'</td>
+				<td>'.$item["SalePrice"].'</td>
+				<td>'.$item["Proce"].'</td>
+				<td><a href="index.php?action=editar_productos&id='.$item["id"].'"><button>Editar</button></a></td>
+				<td><a href="index.php?action=productos&idBorrar='.$item["id"].'"><button>Borrar</button></a></td>
+			</tr>';
+
+		}
+
+	}
+
 	#EDITAR USUARIO
 	#------------------------------------
 
@@ -149,6 +173,7 @@ class MvcController{
 			 <input type="submit" value="Actualizar">';
 
 	}
+
 
 	#ACTUALIZAR USUARIO
 	#------------------------------------
@@ -179,6 +204,8 @@ class MvcController{
 	
 	}
 
+
+
 	#BORRAR USUARIO
 	#------------------------------------
 	public function borrarUsuarioController(){
@@ -187,9 +214,9 @@ class MvcController{
 
 			$datosController = $_GET["idBorrar"];
 			
-			$respuesta = Datos::borrarUsuarioModel($datosController, "usuarios");
+			$respuesta = Datos::borrarProductoModel($datosController, "products");
 
-			if($respuesta == "sxss"){
+			if($respuesta == "success"){
 
 				header("location:index.php?action=usuarios");
 			
@@ -198,6 +225,80 @@ class MvcController{
 		}
 
 	}
+
+	public function editarProductoController(){
+
+		$datosController = $_GET["id"];
+		$respuesta = Datos::editarProductoModel($datosController, "products");
+
+		echo'<input type="hidden" value="'.$respuesta["id"].'" name="idEditar">
+
+			<input type="text" value="'.$respuesta["nombreProd"].'" name="nombreEditar">
+
+			<input type="text" value="'.$respuesta["descProduc"].'" name="descEditar" required>
+
+			<input type="number" value="'.$respuesta["BuyPrice"].'" name="buyPriceEditar" required>
+
+			<input type="number" value="'.$respuesta["SalePrice"].'" name="salePriceEditar" required>
+
+			<input type="number" value="'.$respuesta["Proce"].'" name="proceEditar" required>
+
+			<input type="submit" value="Actualizar">';
+
+	}
+
+	#ACTUALIZAR PRODUCTO
+	#------------------------------------
+	public function actualizarProductoController(){
+
+
+		if(isset($_POST["nombreEditar"])){
+
+			$datosController = array( "id"=>$_POST["idEditar"],
+									  "nombreProd"=>$_POST["nombreEditar"], 
+								      "descProduc"=>$_POST["descEditar"],
+								      "BuyPrice"=>$_POST["buyPriceEditar"],
+								      "SalePrice"=>$_POST["salePriceEditar"],
+								      "Proce"=>$_POST["proceEditar"]);
+			var_dump($datosController);
+			
+			$respuesta = Datos::actualizarProductoModel($datosController, "products");
+
+			if($respuesta == "success"){
+
+				header("location:index.php?action=cambio_p");
+			}
+
+			else{
+
+				echo "error";
+
+			}
+
+		}
+	
+	}
+
+		#BORRAR PRODUCTO
+	#------------------------------------
+	public function borrarProductoController(){
+
+		if(isset($_GET["idBorrar"])){
+
+			$datosController = $_GET["idBorrar"];
+			
+			$respuesta = Datos::borrarProductoModel($datosController, "products");
+
+			if($respuesta == "success"){
+
+				header("location:index.php?action=productos");
+			
+			}
+
+		}
+
+	}
+
 
 		#REGISTRO DE PRODUCTOS
 	#------------------------------------
