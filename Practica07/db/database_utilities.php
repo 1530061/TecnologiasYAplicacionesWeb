@@ -1,6 +1,7 @@
 <?php
 	include('connection.php');
 
+	//Se revisa si el usuario y la contrasena existen en la base de datos retornando true/false
 	function checkUserAndPass($user,$pass){
 		global $pdo;
 
@@ -34,6 +35,7 @@
 		return $results;
 	}
 
+	//Permite obtener el ultimo id de las ventas
 	function getLastIdSale(){
 		global $pdo;
 
@@ -46,6 +48,7 @@
 		return $results[0]['id'];
 	}
 
+	//Guarda una venta en el sistema dependiendo de una matriz de detalles que se ingrese
 	function saveSale($d){
 		global $pdo;
 
@@ -70,6 +73,7 @@
 		
 	}
 
+	//Se obtiene toda la informacion de las ventas
 	function getAllInfoFromSales($date=""){
 		global $pdo;
 
@@ -86,6 +90,7 @@
 		return $results;
 	}
 
+	//Se obtiene la fecha de una venta correspondiente a su id
 	function getSaleDate($id){
 		global $pdo;
 
@@ -99,6 +104,7 @@
 		return $results[0]['fecha'];
 	}
 
+	//Se obtiene el total de la venta correspodiente a el id ingresado
 	function getSaleTotal($id){
 		global $pdo;
 
@@ -144,6 +150,7 @@
 		return $results;
 	}
 
+	//Permite obtener el nombre de los productos
 	function get_productNames(){
 		global $pdo;
 
@@ -157,6 +164,7 @@
 		return $results;
 	}
 
+	//Se revisa si el usuario ya existe
 	function checkIfUserAlreadyExists($user){
 		global $pdo;
 
@@ -189,6 +197,7 @@
 
 	}
 
+	//Permite agregar un nuevo producto
 	function add_product($name,$price){
 		global $pdo;
 
@@ -198,6 +207,7 @@
 		$statement->execute();
 	}
 
+	//Permite actualizar a un usuario
 	function update_user($id,$nombre,$apellido_paterno, $apellido_materno, $usuario, $password){
 		global $pdo;
 
@@ -211,6 +221,7 @@
 		return $results[0];
 	}
 
+	//Permite actualizar un producto
 	function update_product($id,$nombre,$precio){
 		global $pdo;
 
