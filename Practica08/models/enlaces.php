@@ -5,7 +5,7 @@ class Paginas{
 	public function enlacesPaginasModel($enlaces){
 
 
-		if($enlaces == "registro_alumno" || $enlaces == "registro_tutoria" ||  $enlaces == "registro_maestro" || $enlaces == "registro_carrera" || $enlaces == "ingresar" || $enlaces == "maestros" || $enlaces == "carreras" || $enlaces == "tutorias" || $enlaces == "alumnos" || $enlaces == "editar_carreras" || $enlaces == "editar_tutoria" || $enlaces == "editar_maestro" || $enlaces == "editar_alumnos" || $enlaces == "salir"){
+		if($enlaces == "reportes" || $enlaces == "registro_alumno" || $enlaces == "registro_tutoria" ||  $enlaces == "registro_maestro" || $enlaces == "registro_carrera" || $enlaces == "ingresar" || $enlaces == "maestros" || $enlaces == "carreras" || $enlaces == "tutorias" || $enlaces == "alumnos" || $enlaces == "editar_carreras" || $enlaces == "editar_tutoria" || $enlaces == "editar_maestro" || $enlaces == "editar_alumnos" || $enlaces == "salir"){
 
 			$module =  "views/modules/".$enlaces.".php";
 		}
@@ -38,6 +38,9 @@ class Paginas{
 		}
 		else if($enlaces == "cambio_carrera"){
 			$module =  "views/modules/carreras.php";
+		}
+		else if($enlaces == "cambio_tutoria"){
+			$module =  "views/modules/tutorias.php";
 		}
 		else{
 			$module =  "views/modules/registro.php";

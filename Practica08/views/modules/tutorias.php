@@ -10,8 +10,8 @@ if(!$_SESSION["validar"]){
 ?>
 
 <h1>TUTORIAS</h1>
-<td><a href="index.php?action=registro_tutoria"><button>Agregar Nueva Tutoria</button></a></td>
-	<table border="1">
+<td><a href="index.php?action=registro_tutoria"><button class="success">Agregar Nueva Tutoria</button></a></td>
+	<table id="table" border="0">
 		<thead>
 			<tr>
 				<th>Id</th>
@@ -19,8 +19,8 @@ if(!$_SESSION["validar"]){
 				<th>Fecha</th>
 				<th>Tema</th>
 				<th>Tipo</th>
-				<th>Detalles?</th>
-				<th>Eliminar?</th>
+				<th>¿Detalles?</th>
+				<th>¿Eliminar?</th>
 			</tr>
 		</thead>
 		<tbody>

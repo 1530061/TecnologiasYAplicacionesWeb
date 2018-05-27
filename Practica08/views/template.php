@@ -7,10 +7,15 @@
 
 	<link rel="stylesheet" href="./views/css/foundation.css" />
 	<link href="./views/css/select2.min.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="./views/css/datatables.min.css"/>
 
+	
+	
 	<script src="./views/js/vendor/jquery.js"></script>
     <script src="./views/js/vendor/modernizr.js"></script>
 	<script src="./views/js/select2.min.js"></script>
+	<script type="text/javascript" src="./views/js/datatables/datatables.min.js"></script>
+
 
     
 	<style>
@@ -43,9 +48,9 @@
 		}
 
 		section{
-			position: relative;
+			position: center;
 			margin: auto;
-			width:400px;
+			width:65%;
 		}
 
 		section h1{
@@ -58,7 +63,7 @@
 		section form{
 			position:relative;
 			margin:auto;
-			width:400px;
+			width:100%;
 		}
 
 		section form input{
@@ -76,19 +81,14 @@
 		}
 
 		table{
-			position:relative;
-			margin:auto;
 			width:100%;
-			left:-10%;
 		}
 
-		table thead tr th{
-			padding:10px;
+		td {
+		  vertical-align: baseline;
 		}
 
-		table tbody tr td{
-			padding:10px;
-		}
+		
 	</style>
 
 </head>
@@ -98,10 +98,17 @@
 
 <section>
 <?php 
+	ob_start();
+	
 	$mvc = new MvcController();
 	$mvc -> enlacesPaginasController();
 ?>
 
 </section>
 </body>
+<script>
+	$(document).ready( function () {
+	    $('#table').DataTable();
+	} );		
+</script>
 </html>

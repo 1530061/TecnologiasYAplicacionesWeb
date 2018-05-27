@@ -1,0 +1,11 @@
+Base de datos:
+Nombre:		tutorias
+
+
+Cuentas guardadas en el sistema con valores de prueba:
+
+usuario:	superusuario@upv.edu.mx
+contraseña:	superusuario
+
+usuario:	maestro@upv.edu.mx
+contraseña:	maestro

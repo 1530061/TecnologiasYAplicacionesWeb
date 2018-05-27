@@ -8,7 +8,7 @@ if(!$_SESSION["validar"]){
 }
 ?>
 
-<form method="post">
+<form id="tutoriaForm" method="post">
 	<?php
 		$registro = new MvcController();
 		$registro -> registroBaseTutoriaController();

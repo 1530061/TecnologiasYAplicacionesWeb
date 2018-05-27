@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 26, 2018 at 05:54 AM
+-- Generation Time: May 27, 2018 at 08:43 PM
 -- Server version: 10.1.26-MariaDB
 -- PHP Version: 7.1.9
 
@@ -40,8 +40,11 @@ CREATE TABLE `alumnos` (
 --
 
 INSERT INTO `alumnos` (`matricula`, `nombre`, `id_carrera`, `id_tutor`) VALUES
-('12434', 'Jose Rafael', 1, '1550002'),
-('1530061', 'Erick Elizondo Rodriguezeee', 2, '1550002');
+('1530012', 'Carla Perez', 1, '1500235'),
+('1530019', 'Pedro Perales', 1, '1500235'),
+('1530031', 'Ana Gomez', 1, '1500235'),
+('1530061', 'Erick Elizondo Rodriguez', 2, '1500235'),
+('1530201', 'Luis Perales', 1, '1550002');
 
 -- --------------------------------------------------------
 
@@ -59,10 +62,11 @@ CREATE TABLE `carrera` (
 --
 
 INSERT INTO `carrera` (`id`, `nombre`) VALUES
-(1, 'Ing. en Tecnologias de la Idedenformacion'),
+(1, 'Ing. en Tecnologias de la Informacion'),
 (2, 'Lic. en Gestion y Administracion de Pequenas y Medianas Empresas'),
 (4, 'Ing. en Tecnologias de la Manufactura'),
-(5, 'Ing. en Sistemas Automotrices');
+(5, 'Ing. en Sistemas Automotrices'),
+(7, 'Ing. en Ciencias');
 
 -- --------------------------------------------------------
 
@@ -75,17 +79,21 @@ CREATE TABLE `maestros` (
   `nombre` varchar(128) NOT NULL,
   `email` varchar(128) NOT NULL,
   `password` varchar(128) NOT NULL,
-  `id_carrera` int(11) NOT NULL
+  `id_carrera` int(11) NOT NULL,
+  `nivel` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `maestros`
 --
 
-INSERT INTO `maestros` (`num_empleado`, `nombre`, `email`, `password`, `id_carrera`) VALUES
-('1550002', 'Jose Carrizales', 'jose@upv.edu.mx', '12345', 2),
-('423', 'erick', 'dasdad@gmail.com', '1423', 1),
-('asdfasdf', 'Ramon Ramirez', '123123@gmail.com', '123', 1);
+INSERT INTO `maestros` (`num_empleado`, `nombre`, `email`, `password`, `id_carrera`, `nivel`) VALUES
+('1450002', 'Juan Torres', 'jt@upv.edu.mx', '12345', 1, 0),
+('1500231', 'Ramon Hernandez Rodriguez', 'superadmin@upv.edu.mx', 'superadmin', 1, 1),
+('1500235', 'Jose Ramirez Perez', 'maestro@upv.edu.mx', 'maestro', 1, 0),
+('1523122', 'Carlos Perales', 'ca@upv.edu.mx', '12345', 2, 0),
+('1540213', 'Pedro Perales', 'pe@upv.edu.mx', '12345', 1, 1),
+('1550002', 'Jose Carrizales', 'jose@upv.edu.mx', '12345', 2, 0);
 
 -- --------------------------------------------------------
 
@@ -103,8 +111,11 @@ CREATE TABLE `sesion_alumnos` (
 --
 
 INSERT INTO `sesion_alumnos` (`matricula_alumno`, `id_sesion`) VALUES
-('1530061', 1),
-('1530061', 1);
+('1530012', 86),
+('1530019', 86),
+('1530061', 87),
+('1530031', 87),
+('1530201', 88);
 
 -- --------------------------------------------------------
 
@@ -126,9 +137,9 @@ CREATE TABLE `sesion_tutoria` (
 --
 
 INSERT INTO `sesion_tutoria` (`id`, `fecha`, `hora`, `tipo`, `tema`, `num_maestro`) VALUES
-(1, '2018-05-02', '00:14:00', 'Grupal', 'fasdfasdfasdf', '1550002'),
-(3, '2018-05-11', '01:01:00', 'Grupal', '412312', '1550002'),
-(4, '0001-01-01', '01:01:00', 'Grupal', '4123', '1550002');
+(86, '2018-05-28', '15:12:00', 'Grupal', 'Internet', '1500235'),
+(87, '2018-05-30', '17:55:00', 'Grupal', 'Tecnologias', '1500235'),
+(88, '2018-05-18', '01:05:00', 'Grupal', 'Ciencias', '1550002');
 
 --
 -- Indexes for dumped tables
@@ -177,13 +188,13 @@ ALTER TABLE `sesion_tutoria`
 -- AUTO_INCREMENT for table `carrera`
 --
 ALTER TABLE `carrera`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `sesion_tutoria`
 --
 ALTER TABLE `sesion_tutoria`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=89;
 
 --
 -- Constraints for dumped tables
