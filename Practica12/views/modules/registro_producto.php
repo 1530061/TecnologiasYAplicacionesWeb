@@ -1,13 +1,22 @@
-<h1>REGISTRO DE CARRERA</h1>
-
-<form method="post">
-	<?php
-		$registro = new MvcController();
-		$registro -> registroBaseProductoController();
-		$registro -> registroProductoController();
-	?>
-</form>
-
+<div class="card card-info" style="width:100%">
+	<div class="card-header"">
+		<div class="d-inline-block">
+		  <h3 class="card-title">Registrar Producto</h3>
+		</div>
+	</div>
+	<form method="post">
+		<div class="card-body">
+			<div class="form-group">
+				<?php
+					$registro = new MvcController();
+					$registro -> registroBaseProductoController();
+					$registro -> registroProductoController();
+				?>
+			</div>
+		</div>
+	</form>
+	
+</div>
 <?php
 
 

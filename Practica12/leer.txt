@@ -1,11 +1,9 @@
 Base de datos:
-Nombre:		inventario
+Nombre:		inventarios
 
 
 Cuentas guardadas en el sistema con valores de prueba:
 
-usuario:	superusuario@upv.edu.mx
-contraseña:	superusuario
+usuario:	admin
+contraseña:	admin
 
-usuario:	maestro@upv.edu.mx
-contraseña:	maestro

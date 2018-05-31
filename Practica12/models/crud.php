@@ -13,42 +13,29 @@ class Datos extends Conexion{
 	#Obtiene el usuario, contrasena del usuario.
 	public function ingresoUsuarioModel($datosModel, $tabla){
 
-		$stmt = Conexion::conectar()->prepare("SELECT user, pass FROM $tabla WHERE user = :user");	
-		$stmt->bindParam(":user", $datosModel["user"], PDO::PARAM_STR);
+		$stmt = Conexion::conectar()->prepare("SELECT user_name, user_password_hash FROM $tabla WHERE user_name = :user_name");	
+		$stmt->bindParam(":user_name", $datosModel["user_name"], PDO::PARAM_STR);
 		$stmt->execute();
 
 		return $stmt->fetch();
 		$stmt->close();
 	}
 
-	#VISTA INVENTARIOS MODEL
-	#-------------------------------------
-	public function vistaInventariosModel($tabla){
 
-		$stmt = Conexion::conectar()->prepare("SELECT id, nombre FROM $tabla");	
+		#VISTA CARRERA
+	#-------------------------------------
+	public function vistaProductoModel($tabla){
+
+		$stmt = Conexion::conectar()->prepare("SELECT id, nombre, descripcion from $tabla");	
 		$stmt->execute();
- 
+
+		#fetchAll(): Obtiene todas las filas de un conjunto de resultados asociado al objeto PDOStatement. 
 		return $stmt->fetchAll();
 
 		$stmt->close();
 
 	}
-
-	#BORRAR INVENTARIO
-	#------------------------------------
-	public function borrarInventarioModel($datosModel, $tabla){
-		$stmt = Conexion::conectar()->prepare("DELETE FROM $tabla WHERE id=:id");
-		$stmt->bindParam(":id", $datosModel, PDO::PARAM_INT);
-
-
-		if($stmt->execute())
-			return "success";
-		else
-			return "error";
-
-		$stmt->close();
-
-	}
+	
 
 	#BORRAR PRODUCTO
 	#------------------------------------
@@ -66,20 +53,7 @@ class Datos extends Conexion{
 
 	}
 
-	#VISTA INVENTARIOS MODEL
-	#-------------------------------------
-	#Obtiene los datos de todos los maestros
-	public function vistaProductosInventarioModel($datosModel, $tabla){
 
-		$stmt = Conexion::conectar()->prepare("SELECT ip.id_producto, p.nombre, ip.cantidad FROM $tabla as ip INNER JOIN producto AS p ON p.id = ip.id_producto WHERE ip.id_inventario=:id_inventario");	
-		$stmt->bindParam(":id_inventario", $datosModel['id'], PDO::PARAM_INT);
-		$stmt->execute();
- 
-		return $stmt->fetchAll();
-
-		$stmt->close();
-
-	}
 
 	#REGISTRO DE INVENTARIOS
 	#-------------------------------------
@@ -148,19 +122,7 @@ class Datos extends Conexion{
 	}
 
 
-	#VISTA CARRERA
-	#-------------------------------------
-	public function vistaProductoModel($tabla){
 
-		$stmt = Conexion::conectar()->prepare("SELECT id, nombre, descripcion from $tabla");	
-		$stmt->execute();
-
-		#fetchAll(): Obtiene todas las filas de un conjunto de resultados asociado al objeto PDOStatement. 
-		return $stmt->fetchAll();
-
-		$stmt->close();
-
-	}
 
 
 	#REGISTRO DE CARRERAS 

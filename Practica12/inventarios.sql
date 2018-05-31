@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 30, 2018 at 09:06 PM
+-- Generation Time: May 31, 2018 at 12:24 PM
 -- Server version: 10.1.26-MariaDB
 -- PHP Version: 7.1.9
 
@@ -25,144 +25,124 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `inventario`
+-- Table structure for table `categorias`
 --
 
-CREATE TABLE `inventario` (
-  `id` int(11) NOT NULL,
-  `nombre` varchar(128) NOT NULL
+CREATE TABLE `categorias` (
+  `id_categoria` int(11) NOT NULL,
+  `nombre_categoria` varchar(255) NOT NULL,
+  `descripcion_categoria` varchar(255) NOT NULL,
+  `date_added` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `inventario`
---
-
-INSERT INTO `inventario` (`id`, `nombre`) VALUES
-(2, 'Supermercado Soriana'),
-(5, 'Tiendita');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `inventario_producto`
+-- Table structure for table `historial`
 --
 
-CREATE TABLE `inventario_producto` (
-  `id_inventario` int(11) NOT NULL,
+CREATE TABLE `historial` (
+  `id_historial` int(11) NOT NULL,
   `id_producto` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `fecha` datetime NOT NULL,
+  `nota` varchar(255) NOT NULL,
+  `referencia` varchar(100) NOT NULL,
   `cantidad` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+-- --------------------------------------------------------
+
 --
--- Dumping data for table `inventario_producto`
+-- Table structure for table `products`
 --
 
-INSERT INTO `inventario_producto` (`id_inventario`, `id_producto`, `cantidad`) VALUES
-(2, 1, 0),
-(2, 1, 5);
+CREATE TABLE `products` (
+  `id_producto` int(11) NOT NULL,
+  `codigo_producto` char(255) NOT NULL,
+  `nombre_producto` char(255) NOT NULL,
+  `date_added` datetime NOT NULL,
+  `precio_producto` double NOT NULL,
+  `stock` int(11) NOT NULL,
+  `id_categoria` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `producto`
+-- Table structure for table `users`
 --
 
-CREATE TABLE `producto` (
-  `id` int(11) NOT NULL,
-  `nombre` varchar(128) NOT NULL,
-  `descripcion` varchar(128) NOT NULL
+CREATE TABLE `users` (
+  `user_id` int(11) NOT NULL,
+  `firstname` varchar(20) NOT NULL,
+  `lastname` varchar(20) NOT NULL,
+  `user_name` varchar(64) NOT NULL,
+  `user_password_hash` varchar(255) NOT NULL,
+  `user_email` varchar(64) NOT NULL,
+  `date_added` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `producto`
+-- Dumping data for table `users`
 --
 
-INSERT INTO `producto` (`id`, `nombre`, `descripcion`) VALUES
-(1, 'Sabritas Adobadas ', 'Sabritas Rojas'),
-(3, 'Paleta', 'Fresa'),
-(4, 'Caramelo', 'Dulce');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `usuario`
---
-
-CREATE TABLE `usuario` (
-  `id` int(11) NOT NULL,
-  `user` varchar(128) NOT NULL,
-  `pass` varchar(128) NOT NULL,
-  `nombre` varchar(128) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `usuario`
---
-
-INSERT INTO `usuario` (`id`, `user`, `pass`, `nombre`) VALUES
-(1, 'admin', 'admin', 'Carlos Hernandez Rodriguez');
+INSERT INTO `users` (`user_id`, `firstname`, `lastname`, `user_name`, `user_password_hash`, `user_email`, `date_added`) VALUES
+(1, 'Carlos', 'Perez', 'admin', 'admin', 'admin@gmail.com', '2018-05-23 00:00:00');
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `inventario`
+-- Indexes for table `categorias`
 --
-ALTER TABLE `inventario`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `categorias`
+  ADD PRIMARY KEY (`id_categoria`);
 
 --
--- Indexes for table `inventario_producto`
+-- Indexes for table `historial`
 --
-ALTER TABLE `inventario_producto`
-  ADD KEY `id_inventario` (`id_inventario`),
+ALTER TABLE `historial`
+  ADD PRIMARY KEY (`id_historial`),
   ADD KEY `id_producto` (`id_producto`);
 
 --
--- Indexes for table `producto`
+-- Indexes for table `products`
 --
-ALTER TABLE `producto`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `products`
+  ADD PRIMARY KEY (`id_producto`),
+  ADD KEY `codigo_producto` (`codigo_producto`);
 
 --
--- Indexes for table `usuario`
+-- Indexes for table `users`
 --
-ALTER TABLE `usuario`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`user_id`),
+  ADD UNIQUE KEY `user_name` (`user_name`),
+  ADD KEY `user_email` (`user_email`);
 
 --
 -- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT for table `inventario`
+-- AUTO_INCREMENT for table `categorias`
 --
-ALTER TABLE `inventario`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+ALTER TABLE `categorias`
+  MODIFY `id_categoria` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `producto`
+-- AUTO_INCREMENT for table `products`
 --
-ALTER TABLE `producto`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+ALTER TABLE `products`
+  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `usuario`
+-- AUTO_INCREMENT for table `users`
 --
-ALTER TABLE `usuario`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- Constraints for dumped tables
---
-
---
--- Constraints for table `inventario_producto`
---
-ALTER TABLE `inventario_producto`
-  ADD CONSTRAINT `inventario_producto_ibfk_1` FOREIGN KEY (`id_inventario`) REFERENCES `inventario` (`id`),
-  ADD CONSTRAINT `inventario_producto_ibfk_2` FOREIGN KEY (`id_producto`) REFERENCES `producto` (`id`);
+ALTER TABLE `users`
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
