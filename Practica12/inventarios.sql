@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 31, 2018 at 12:24 PM
+-- Generation Time: Jun 06, 2018 at 09:24 PM
 -- Server version: 10.1.26-MariaDB
 -- PHP Version: 7.1.9
 
@@ -35,6 +35,14 @@ CREATE TABLE `categorias` (
   `date_added` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `categorias`
+--
+
+INSERT INTO `categorias` (`id_categoria`, `nombre_categoria`, `descripcion_categoria`, `date_added`) VALUES
+(19, 'Comida', 'Alimentos ', '2018-06-06 20:48:12'),
+(20, 'Juguetes', 'Jueguetes', '2018-06-06 20:50:29');
+
 -- --------------------------------------------------------
 
 --
@@ -51,6 +59,16 @@ CREATE TABLE `historial` (
   `cantidad` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `historial`
+--
+
+INSERT INTO `historial` (`id_historial`, `id_producto`, `user_id`, `fecha`, `nota`, `referencia`, `cantidad`) VALUES
+(86, 22, 1, '2018-06-06 20:49:26', 'El usuario Carlos agrego 2 producto(s) al inventario.', 'A1', 2),
+(87, 22, 1, '2018-06-06 20:49:32', 'El usuario Carlos agrego 3 producto(s) al inventario.', '1', 3),
+(88, 22, 1, '2018-06-06 20:49:38', 'El usuario Carlos agrego 52 producto(s) al inventario.', 'A2', 52),
+(89, 22, 1, '2018-06-06 20:49:42', 'El usuario Carlos agrego 21 producto(s) al inventario.', 'A3', 21);
+
 -- --------------------------------------------------------
 
 --
@@ -66,6 +84,16 @@ CREATE TABLE `products` (
   `stock` int(11) NOT NULL,
   `id_categoria` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `products`
+--
+
+INSERT INTO `products` (`id_producto`, `codigo_producto`, `nombre_producto`, `date_added`, `precio_producto`, `stock`, `id_categoria`) VALUES
+(22, '123', 'Sabritas', '2018-06-06 20:48:33', 12, 38, 19),
+(23, '124', 'Paletas', '2018-06-06 20:50:06', 15, 9, 19),
+(24, '125', 'Carro', '2018-06-06 20:50:47', 141, 1, 20),
+(26, '126', 'Pelota', '2018-06-06 21:11:40', 41, 131, 20);
 
 -- --------------------------------------------------------
 
@@ -88,7 +116,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `firstname`, `lastname`, `user_name`, `user_password_hash`, `user_email`, `date_added`) VALUES
-(1, 'Carlos', 'Perez', 'admin', 'admin', 'admin@gmail.com', '2018-05-23 00:00:00');
+(1, 'Carlos', 'Perez', 'admin', '21232f297a57a5a743894a0e4a801fc3', 'admin@gmail.com', '2018-05-23 00:00:00'),
+(3, 'Erick', 'Elizondo', 'erick_elizondo', '0531a9f69b32c376efebb5268fec1e2a', '1530061@upv.edu.mx', '2018-06-06 20:48:58');
 
 --
 -- Indexes for dumped tables
@@ -105,14 +134,18 @@ ALTER TABLE `categorias`
 --
 ALTER TABLE `historial`
   ADD PRIMARY KEY (`id_historial`),
-  ADD KEY `id_producto` (`id_producto`);
+  ADD KEY `id_producto` (`id_producto`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `id_producto_2` (`id_producto`);
 
 --
 -- Indexes for table `products`
 --
 ALTER TABLE `products`
   ADD PRIMARY KEY (`id_producto`),
-  ADD KEY `codigo_producto` (`codigo_producto`);
+  ADD UNIQUE KEY `codigo_producto_2` (`codigo_producto`),
+  ADD KEY `codigo_producto` (`codigo_producto`),
+  ADD KEY `id_categoria` (`id_categoria`);
 
 --
 -- Indexes for table `users`
@@ -130,19 +163,42 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `categorias`
 --
 ALTER TABLE `categorias`
-  MODIFY `id_categoria` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_categoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+
+--
+-- AUTO_INCREMENT for table `historial`
+--
+ALTER TABLE `historial`
+  MODIFY `id_historial` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=90;
 
 --
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `historial`
+--
+ALTER TABLE `historial`
+  ADD CONSTRAINT `historial_ibfk_1` FOREIGN KEY (`id_producto`) REFERENCES `products` (`id_producto`) ON DELETE NO ACTION,
+  ADD CONSTRAINT `historial_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE NO ACTION;
+
+--
+-- Constraints for table `products`
+--
+ALTER TABLE `products`
+  ADD CONSTRAINT `products_ibfk_1` FOREIGN KEY (`id_categoria`) REFERENCES `categorias` (`id_categoria`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

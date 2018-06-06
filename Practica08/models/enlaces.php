@@ -42,6 +42,9 @@ class Paginas{
 		else if($enlaces == "cambio_tutoria"){
 			$module =  "views/modules/tutorias.php";
 		}
+		else if($enlaces == "cambio_producto"){
+			$module =  "views/modules/inventario.php";
+		}
 		else{
 			$module =  "views/modules/registro.php";
 		}

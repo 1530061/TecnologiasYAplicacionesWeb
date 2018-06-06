@@ -45,6 +45,7 @@ if(!$_SESSION["validar"]){
 			</tbody>
 		</table>
 	</div>
+</div>
 			<?php
 
 if(isset($_GET["action"])){

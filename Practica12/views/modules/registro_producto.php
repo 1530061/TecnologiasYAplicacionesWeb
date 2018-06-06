@@ -1,4 +1,4 @@
-<div class="card card-info" style="width:100%">
+<div class="card card-info mx-auto" style="width:50%;">
 	<div class="card-header"">
 		<div class="d-inline-block">
 		  <h3 class="card-title">Registrar Producto</h3>

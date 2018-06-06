@@ -37,20 +37,22 @@
       <p class="mb-1">
         <a href="#">I forgot my password</a>
       </p>
-  
+      <?php
+
+      $ingreso = new MvcController();
+      $ingreso -> ingresoUsuarioController();
+
+      if(isset($_GET["action"])){
+        if($_GET["action"] == "fallo"){
+          echo'
+            <p class="mb-1">Error al ingresar</p>
+          ';
+        }
+      }
+      ?>
     </div>
     <!-- /.login-card-body -->
   </div>
 </div>
-<?php
 
-$ingreso = new MvcController();
-$ingreso -> ingresoUsuarioController();
 
-if(isset($_GET["action"])){
-	if($_GET["action"] == "fallo"){
-		echo "Fallo al ingresar";
-	}
-}
-
-?>

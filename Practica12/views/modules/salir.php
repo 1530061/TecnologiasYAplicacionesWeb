@@ -5,6 +5,6 @@ setcookie("nivel", "", time()-3600);
 unset($_COOKIE["nivel"]);
 session_destroy();
 
+header("location:index.php");
 ?>
 
-<h1>Ha salido de la aplicacion</h1>

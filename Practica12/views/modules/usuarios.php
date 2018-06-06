@@ -37,15 +37,16 @@ if(!$_SESSION["validar"]){
 				<?php
 
 				$vistaAlumno = new MvcController();
-				$vistaAlumno -> vistaProductoController();
-				$vistaAlumno -> borrarProductoController();
+				$vistaAlumno -> vistaUsuarioController();
+				$vistaAlumno -> borrarUsuarioController();
 
 				?>
 
 			</tbody>
 		</table>
 	</div>
-			<?php
+</div>
+<?php
 
 if(isset($_GET["action"])){
 	if($_GET["action"] == "cambio"){

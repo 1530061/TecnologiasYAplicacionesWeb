@@ -7,6 +7,8 @@ if(!$_SESSION["validar"]){
 	exit();
 }
 
+    $dash = new MvcController();
+    $r = $dash -> dashboardDetailsControllers();
 ?>
 <div class="container-fluid">
 	<div class="row">
@@ -14,9 +16,9 @@ if(!$_SESSION["validar"]){
         <!-- small box -->
         <div class="small-box bg-info">
           <div class="inner">
-            <h3>150</h3>
+            <h3><?php echo($r['r1'][0]); ?></h3>
 
-            <p>Productos</p>
+            <p>Total de Productos</p>
           </div>
           <div class="icon">
             <i class="ion ion-bag"></i>
@@ -29,9 +31,9 @@ if(!$_SESSION["validar"]){
         <!-- small box -->
         <div class="small-box bg-success">
           <div class="inner">
-            <h3>53<sup style="font-size: 20px">%</sup></h3>
+            <h3><?php echo($r['r2'][0]); ?><sup style="font-size: 20px"></sup></h3>
 
-            <p>Registros</p>
+            <p>Total de Usuarios</p>
           </div>
           <div class="icon">
             <i class="ion ion-stats-bars"></i>
@@ -44,9 +46,9 @@ if(!$_SESSION["validar"]){
         <!-- small box -->
         <div class="small-box bg-warning">
           <div class="inner">
-            <h3>44</h3>
+            <h3><?php echo($r['r3'][0]); ?></h3>
 
-            <p>Eliminados</p>
+            <p>Total de Categorias</p>
           </div>
           <div class="icon">
             <i class="ion ion-person-add"></i>
@@ -59,9 +61,9 @@ if(!$_SESSION["validar"]){
         <!-- small box -->
         <div class="small-box bg-danger">
           <div class="inner">
-            <h3>65</h3>
+            <h3><?php echo($r['r4'][0]); ?></h3>
 
-            <p>Mas Stock</p>
+            <p>Total de Cambios Realizados</p>
           </div>
           <div class="icon">
             <i class="ion ion-pie-graph"></i>
