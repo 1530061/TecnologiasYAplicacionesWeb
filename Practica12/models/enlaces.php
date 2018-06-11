@@ -5,7 +5,7 @@ class Paginas{
 	public function enlacesPaginasModel($enlaces){
 
 
-		if($enlaces == "usuarios" || $enlaces == "categorias" || $enlaces == "dashboard" || $enlaces == "inventario" || $enlaces == "editar_producto" || $enlaces == "editar_usuario" || $enlaces == "editar_categoria" || $enlaces == "editar_tienda" ||$enlaces == "ingresar" || $enlaces == "registro_producto" || $enlaces == "registro_tienda" || $enlaces == "registro_usuario" || $enlaces == "registro_categoria" || $enlaces == "salir" || $enlaces == "producto_detalles" || $enlaces == "tiendas"  || $enlaces == "redirect" ){
+		if($enlaces == "usuarios" || $enlaces == "categorias" || $enlaces == "dashboard" || $enlaces == "inventario" || $enlaces == "editar_producto" || $enlaces == "editar_usuario" || $enlaces == "editar_categoria" || $enlaces == "editar_tienda" ||$enlaces == "ingresar" || $enlaces == "registro_producto" || $enlaces == "registro_tienda" || $enlaces == "registro_usuario" || $enlaces == "registro_categoria" || $enlaces == "salir" || $enlaces == "producto_detalles" || $enlaces == "tiendas"  || $enlaces == "redirect" || $enlaces == "venta" ){
 
 			$module =  "views/modules/".$enlaces.".php";
 		}

@@ -29,7 +29,7 @@ if(isset($_SESSION['id_tienda']))
 		  <h3 class="card-title">Editar Usuario</h3>
 		</div>
 	</div>
-	<form method="post">
+	<form method="post" id="cat">
 		<div class="card-body">
 			<div class="form-group">
 	

@@ -126,6 +126,59 @@ class Datos extends Conexion{
 
 	}
 
+	public function obtenerProductosModel($tabla){
+		$stmt = Conexion::conectar()->prepare("SELECT id_producto, nombre_producto, precio_producto, stock FROM $tabla WHERE id_tienda=:id_tienda");
+		$stmt->bindParam(":id_tienda", $_SESSION['id_tienda'], PDO::PARAM_INT);	
+		$stmt->execute();
+
+		return $stmt->fetchAll();
+	}
+	
+
+	public function insertarProductosDeVenta($datosModel, $tabla){
+
+		$stmt = Conexion::conectar()->prepare("INSERT INTO $tabla (id_venta, id_producto, cantidad, importe) VALUES (:id_venta, :id_producto, :cantidad, :importe)");	
+
+		$stmt->bindParam(":id_venta", $datosModel["id_venta"], PDO::PARAM_INT);
+		$stmt->bindParam(":id_producto", $datosModel["id_producto"], PDO::PARAM_INT);
+		$stmt->bindParam(":cantidad", $datosModel["cantidad"], PDO::PARAM_INT);
+		$stmt->bindParam(":importe", $datosModel["importe"], PDO::PARAM_STR);
+		
+		if($stmt->execute()){
+			return "success";
+		}
+		else{
+			return "error";
+		}
+
+		$stmt->close();
+	}
+	#REGISTRO DE CATEGORIAS
+	#-------------------------------------
+	public function insertarVenta($datosModel, $tabla){
+
+		$stmt = Conexion::conectar()->prepare("INSERT INTO $tabla (fecha, total) VALUES (:fecha, :total)");	
+
+		$stmt->bindParam(":fecha", $datosModel["fecha"], PDO::PARAM_STR);
+		$stmt->bindParam(":total", $datosModel["total"], PDO::PARAM_STR);
+		
+		if($stmt->execute()){
+			return "success";
+		}
+		else{
+			return "error";
+		}
+
+		$stmt->close();
+	}
+
+	public function getLastId($tabla){
+		$stmt = Conexion::conectar()->prepare("SELECT max(id) as id FROM venta");
+		$stmt->execute();
+
+		return $stmt->fetch();
+	}
+
 	#BORRAR HISTORIAL
 	#-------------------------------------
 	#Permite eliminar los productos de una categoria

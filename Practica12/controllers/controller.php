@@ -332,6 +332,147 @@ class MvcController{
 	}
 	
 
+	public function vistaVentaController(){
+		//Se checa si existe 'data' en post que corresponde a un array que se obtiene con todos los registros
+		//de la venta posteriormente se realiza el guardado de la misma
+
+		$respuesta_productos = Datos::obtenerProductosModel("products");
+
+
+		$st_productos="";
+		for($i=0;$i<sizeof($respuesta_productos);$i++)
+			$st_productos=$st_productos."<option value='".$respuesta_productos[$i]['precio_producto']."'>".$respuesta_productos[$i]['id_producto']." - ".$respuesta_productos[$i]['nombre_producto']."</option>";
+
+		$mydate=getdate(date("U"));
+		echo ("$mydate[weekday], $mydate[month] $mydate[mday], $mydate[year]");
+		
+		echo('
+			<thead>
+	            <th>Producto</th>
+	            <th>Cantidad</th>
+	            <th></th>
+	          </thead>
+	          <tbody id="tab">
+	            <tr>
+	              <td>
+	                <select id="sel_prod" class="form-control js-example-basic-multiple" name="sel_prod">
+						  '.$st_productos.'
+					 </select>
+	              </td>
+	              <td>
+	                <input type="number" class="form-control" name="txt_cant" min="1" value="1" id="txt_cant">
+	              </td>
+	              <td style="width:50px;">
+	                 <button class="form-control id="btn_nu" value="Click" onclick="add_row()">Agregar</button>
+	              </td>
+	            </tr>
+	          </tbody>
+	        </table>
+	        <br><br>
+	        <h4 >Informacion de la venta:</h4>
+	        <table class="form-control " style="border: none; ">
+	          <thead>
+		            <tr>
+		              <th id="txt_total" >Total: 0</th>
+		              <th style="width:250px;">
+		                 <button class="form-control id="btn_terminar" style="height:60px" onclick="sendData();">Terminar Venta</button>
+		              </th>
+		            </tr>
+	          </thead>
+	        </table>
+	       
+	        <table id="table" class="form-control " style="border: none; width:100%">
+	          <thead>
+	            <tr>
+	              <th>Id</th>
+	              <th>Nombre</th>
+	              <th>Cantidad</th>
+	              <th>Valor Unitario</th>
+	              <th>Importe</th>
+	            </tr>
+	          </thead>
+	          <tbody id="tab_details">
+	          
+	          
+	          </tbody>
+	        </table>');
+
+		echo('
+			 <script>
+			      var count=0;
+			      var details=[];
+
+			      //Funcion que permite añadir una nueva fila a la tabla del fondo, permitiendo tambien
+			      //agregar cantidades a los productos que ya se encuentran actualmente en la tabla.
+			      function add_row(){
+			        //Llamado de componentes
+			        var e = document.getElementById("sel_prod");
+			        var c = document.getElementById("txt_cant");
+			        var table = document.getElementById("tab_details");
+			        var txt_total = document.getElementById("txt_total");
+
+			        //Obteniendo todos los valores
+			        var split = e.options[e.selectedIndex].text.split("-");
+			        var id=split[0];
+			        var nombre=split[1];
+			        var cantidad = Number(c.value);
+			        var importe = e.options[e.selectedIndex].value*cantidad;
+			        var prom_unidad = importe/cantidad;
+
+			        var total=0;
+			        var found=false;
+			        //En caso de que ya exista, el registro existente se modifica y se agregan las cantidades
+			        for(var i=0;i<details.length;i++){
+			          if(details[i][0]==id){
+			            details[i][2]=details[i][2]+cantidad;
+			            details[i][4]=details[i][4]+importe;
+			            details[i][3]=details[i][4]/details[i][2];
+			            found=true;
+			          }
+			          total+=details[i][4];
+			        }
+			        if(!found)
+			          details.push([id,nombre,cantidad,prom_unidad, importe]);
+
+			        var new_row="";
+			        
+			        for(var i=0;i<details.length;i++){
+			          new_row=new_row+"<tr><td>"+details[i][0]+"</td><td>"+details[i][1]+"</td><td>"+details[i][2]+"</td><td>"+details[i][3]+"</td><td>"+details[i][4]+"</td></tr>";
+			        }
+			        
+			        table.innerHTML="";
+			        table.innerHTML=new_row;
+			        txt_total.innerHTML = "Total: "+total;
+			      }
+
+			      	
+			        
+			      //Se envia la matriz que contiene la tabla por post a sale.php donde se continua con su guardado mediante PHP.
+			      var sendData = function() {
+			        if(details.length==0){
+			        	swal("Por favor, ingrese algun producto en la venta primero", {});
+			        }else{
+			          var r = confirm("¿Cerrar esta venta?");
+			          if (!r) 
+			              event.preventDefault();
+			          else{
+			            $.post("views/modules/saving.php", {
+			              data: details
+			            }, function(data,status) {
+			            	console.log(data);
+			            });
+			            swal("Venta realizada exitosamente", {});
+			            window.location.href = "index.php?action=venta";
+			          }
+			        }
+			      }
+
+			      var doc = document.documentElement;
+			      doc.setAttribute("data-useragent", navigator.userAgent);
+    		</script>');
+	}
+
+
 	#Vista de tiendas
 	#------------------------------------
 	#CRUD de las tiendas, unicamente para superuser
@@ -779,8 +920,43 @@ class MvcController{
 			 <input class="form-control" type="text" value="'.$respuesta["descripcion_categoria"].'" name="descripcion_categoria" required>
 			 <br>
 			 <div class="card-footer">
-			 	<input type="submit" class="btn btn-primary float-right" value="Actualizar">
+			 	<input type="submit" onclick="wait();" class="btn btn-primary float-right" value="Actualizar">
 			 </div>';
+
+		echo'
+		<script>
+			var pass="'.$_SESSION['user_p'].'";
+			function wait(){
+				event.preventDefault();
+				swal("Ingrese su contraseña:", {
+					  content: {
+						    element: "input",
+						    attributes: {
+						      placeholder: "Contraseña",
+						      type: "password",
+						    },
+						 },
+					})
+					.then((value) => {
+						if(value==pass){
+							swal({
+							  title: "¿Esta seguro que desea modificar esta categoria?",
+							  icon: "warning",
+							  buttons: true,
+							  dangerMode: true,
+							})
+							.then((willDelete) => {
+							  if (willDelete) {
+							  	document.getElementById("cat").submit();
+							    
+							  }
+							});
+					  	}else{
+					  		swal("Contraseña Incorrecta Intente de nuevo", {});
+					  	}
+					});
+			}
+		</script>';
 	}
 
 
@@ -812,11 +988,43 @@ class MvcController{
   			 	</label>
 			</div>
 			 
-  
 			 <br>
 			 <div class="card-footer">
-			 	<input type="submit" class="btn btn-primary float-right" value="Actualizar">
+			 	<input type="submit" onClick="wait();" class="btn btn-primary float-right" value="Actualizar">
 			 </div>';
+	echo'
+		<script>
+			var pass="'.$_SESSION['user_p'].'";
+			function wait(){
+				event.preventDefault();
+				swal("Ingrese su contraseña:", {
+					  content: {
+						    element: "input",
+						    attributes: {
+						      placeholder: "Contraseña",
+						      type: "password",
+						    },
+						 },
+					})
+					.then((value) => {
+						if(value==pass){
+							swal({
+							  title: "¿Esta seguro que desea modificar esta tienda?",
+							  icon: "warning",
+							  buttons: true,
+							  dangerMode: true,
+							})
+							.then((willDelete) => {
+							  if (willDelete) {
+							  	document.getElementById("cat").submit();
+							  }
+							});
+					  	}else{
+					  		swal("Contraseña Incorrecta Intente de nuevo", {});
+					  	}
+					});
+			}
+		</script>';
 	}
 
 	#ACTUALIZAR TIENDA
@@ -824,6 +1032,58 @@ class MvcController{
 	#Modificacion de tienda
 	public function actualizarTiendaController(){
 		
+		if(isset($_POST["id_tienda"])){
+			$datosController = array( "id_tienda"=>$_POST["id_tienda"],
+							          "nombre"=>$_POST["nombre"],
+							          "activa"=>$_POST["activa"]
+									);
+			var_dump($datosController);
+			$respuesta = Datos::actualizarTiendaModel($datosController, "tienda");
+			
+			
+			if($respuesta == "success"){
+				header("location:index.php?action=cambio_tienda");
+			}
+			else{
+				echo "error";
+			}
+		}
+	}
+
+
+
+	#ACTUALIZAR TIENDA
+	#------------------------------------
+	#Modificacion de tienda
+	public function insertSale($d){
+		
+		$fecha=date("Y-m-d H:i:s");
+
+		$total=0;
+		for($i=0;$i<count($d);$i++){
+			$total=$total+$d[$i][4];
+		}
+
+		$datosController = array( "fecha"=>$fecha,
+						          "total"=>$total
+									);
+		
+		$respuesta = Datos::insertarVenta($datosController, "venta");
+
+		$respuesta_id = Datos::getLastId("venta");
+
+		$id=$respuesta_id['id'];;
+
+		for($i=0;$i<count($d);$i++){
+			$datosController = array( "id_producto"=>$d[$i][0],
+						          	  "id_venta"=>$id,
+						          	  "cantidad"=>$d[$i][2],
+						          	  "importe"=>$d[$i][4]
+									);
+
+			$respuesta = Datos::insertarProductosDeVenta($datosController, "venta_producto");
+		}
+
 		if(isset($_POST["id_tienda"])){
 			$datosController = array( "id_tienda"=>$_POST["id_tienda"],
 							          "nombre"=>$_POST["nombre"],
@@ -966,8 +1226,41 @@ class MvcController{
 			 <input class="form-control" type="password" name="user_pass" required>
 			 <br>
 			 <div class="card-footer">
-			 	<input type="submit" class="btn btn-primary float-right" value="Registrar">
+			 	<input type="submit" onClick="wait();" class="btn btn-primary float-right" value="Actualizar">
 			 </div>';
+		echo'
+		<script>
+			var pass="'.$_SESSION['user_p'].'";
+			function wait(){
+				event.preventDefault();
+				swal("Ingrese su contraseña:", {
+					  content: {
+						    element: "input",
+						    attributes: {
+						      placeholder: "Contraseña",
+						      type: "password",
+						    },
+						 },
+					})
+					.then((value) => {
+						if(value==pass){
+							swal({
+							  title: "¿Esta seguro que desea modificar esta usuario?",
+							  icon: "warning",
+							  buttons: true,
+							  dangerMode: true,
+							})
+							.then((willDelete) => {
+							  if (willDelete) {
+							  	document.getElementById("cat").submit();
+							  }
+							});
+					  	}else{
+					  		swal("Contraseña Incorrecta Intente de nuevo", {});
+					  	}
+					});
+			}
+		</script>';
 	}
 
 	#ACTUALIZAR USUARIO

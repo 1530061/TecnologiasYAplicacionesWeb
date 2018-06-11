@@ -87,6 +87,14 @@
                   </p>
                 </a>
               </li>
+              <li>
+                <a href="?action=venta" class="nav-link">
+                  <i class="nav-icon fa fa-tags"></i>
+                  <p>
+                    Venta
+                  </p>
+                </a>
+              </li>
               <?php
                 }
               ?>
