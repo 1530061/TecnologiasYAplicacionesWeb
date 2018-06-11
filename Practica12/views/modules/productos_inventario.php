@@ -6,6 +6,11 @@ if(!$_SESSION["validar"]){
 	header("location:index.php?action=ingresar");
 	exit();
 }
+if(isset($_SESSION['id_tienda']))
+    if($_SESSION['id_tienda']=='1'){
+    	header("location:index.php?action=tiendas");
+    	exit();
+    }
 
 ?>
 

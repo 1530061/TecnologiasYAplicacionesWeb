@@ -6,10 +6,17 @@ if(!$_SESSION["validar"]){
 	header("location:index.php?action=ingresar");
 	exit();
 }
+if(isset($_SESSION['id_tienda']))
+    if($_SESSION['id_tienda']=='1'){
+      header("location:index.php?action=tiendas");
+      exit();
+    }
 
     $dash = new MvcController();
     $r = $dash -> dashboardDetailsControllers();
 ?>
+
+
 <div class="container-fluid">
 	<div class="row">
       <div class="col-lg-3 col-6">

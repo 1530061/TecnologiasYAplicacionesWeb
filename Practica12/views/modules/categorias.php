@@ -6,15 +6,26 @@ if(!$_SESSION["validar"]){
 	header("location:index.php?action=ingresar");
 	exit();
 }
-
+if(isset($_SESSION['id_tienda']))
+    if($_SESSION['id_tienda']=='1'){
+    	header("location:index.php?action=tiendas");
+    	exit();
+    }
 ?>
-
+<div class="col-sm-6">
+    <ol class="breadcrumb float-sm-right">
+      <li class="breadcrumb-item"><a href="index.php">Home</a></li>
+      <li class="breadcrumb-item active">Categorias</a></li>
+    </ol>
+  </div><!-- /.col -->
+  <br><br>
+</div>
 <div class="card card-info" style="width:100%">
 	<div class="card-header"">
 		<div class="d-inline-block">
 		  <h3 class="card-title">Categorias</h3>
 		</div>
-		<div class="d-inline-block pull-right"">
+		<div class="d-inline-block float-right"">
 		  <a href="index.php?action=registro_categoria"><button class="btn btn-block btn-success">Agregar Nueva Categoria</button></a>
 		</div>
 	</div>

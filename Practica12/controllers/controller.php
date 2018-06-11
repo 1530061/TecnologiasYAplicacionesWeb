@@ -5,12 +5,11 @@ class MvcController{
 	#LLAMADA A LA PLANTILLA
 	#-------------------------------------
 	#Permite la llamada al template de la pagina
-	public function pagina($t=0){
+	public function pagina(){
 		
 		include "views/template.php";
 	
 	}
-
 
 	#ENLACES
 	#-------------------------------------
@@ -24,11 +23,17 @@ class MvcController{
 		include $respuesta;
 	}
 
-	############################################################### USUARIOS #########################################################
-
+	#ACTUALIZAR NOMBRE
+	#-------------------------------------
+	#Actualiza el nombre de la tienda de la variable sesion
+	public function updateTiendaName($id_tienda){
+		$r_tienda = Datos::getDetailsFromTienda($id_tienda, "tienda");
+		$_SESSION['nombre_tienda']=$r_tienda['nombre'];
+	}
 
 	#Ingreso de USUARIOS
 	#------------------------------------
+	#Se encarga de revisar la cuenta ingresada y conceder los permisos debidos
 	public function ingresoUsuarioController(){
 
 		if(isset($_POST["user"])){
@@ -36,13 +41,29 @@ class MvcController{
 								      "pass"=>$_POST["pass"]);
 			$respuesta = Datos::ingresoUsuarioModel($datosController, "users");
 			
+			var_dump(md5($_POST["pass"]));
 			if($respuesta["user_name"] == $_POST["user"] && $respuesta["user_password_hash"] == md5($_POST["pass"])){
-				session_start();
-				$_SESSION["validar"] = true;
-				$_SESSION["user_p"] = $_POST["pass"];
-				$_SESSION["user_id"] = $respuesta["user_id"];
-				$_SESSION["firstname"] = $respuesta["firstname"];
-				header("location:index.php?action=productos");
+				
+				$r_tienda = Datos::getDetailsFromTienda($respuesta['id_tienda'], "tienda");
+
+				
+				if(sizeof($r_tienda)>0 && $r_tienda['activa']==1){
+					session_start();
+					$_SESSION["validar"] = true;
+					$_SESSION["user_p"] = $_POST["pass"];
+					$_SESSION["user_id"] = $respuesta["user_id"];
+					$_SESSION["name"] = $respuesta["firstname"]." ".$respuesta["lastname"];
+					$_SESSION["id_tienda"] = $respuesta["id_tienda"];
+					$_SESSION["nombre_tienda"] = $r_tienda['nombre'];
+					if($respuesta["id_tienda"]=="1")
+						$_SESSION['sa']="1";
+					else
+						$_SESSION['sa']="0";
+					
+					header("location:index.php?action=dashboard");
+				}else{
+					header("location:index.php?action=fallo");
+				}
 			}
 			else{
 				header("location:index.php?action=fallo");
@@ -52,6 +73,7 @@ class MvcController{
 
 	#Obtiene los valores de determinado campo para el dashboard
 	#------------------------------------
+	#Retorna un valor del modelo
 	public function dashboardDetailsControllers(){
 		$r1 = Datos::getTotalOfModel("products");
 		$r2 = Datos::getTotalOfModel("users");
@@ -66,48 +88,17 @@ class MvcController{
 	}
 
 
-	#Vista de inventario
-	#------------------------------------
-	public function vistaInventarioController(){
-
-		$respuesta = Datos::vistaInventarioModel("products");
-
-		foreach($respuesta as $row => $item){
-		echo'<tr>
-				<td>'.$item["codigo_producto"].'</td>
-				<td>'.$item["nombre_producto"].'</td>
-				<td>'.$item["date_added"].'</td>
-				<td>'.$item["precio_producto"].'</td>
-				<td>'.$item["stock"].'</td>
-				<td><a href="index.php?action=editar_producto&id='.$item["id"].'"><button class="btn btn-block btn-warning">Editar</button></a></td>
-				<td><a href="index.php?action=productos&idBorrar='.$item["id"].'"><button onclick="wait();" class="btn btn-block btn-danger">Borrar</button></a></td>
-			</tr>';
-		echo ' 
-			<script type="text/javascript">
-		        var pass="'.$_SESSION['user_p'].'";
-		        function wait(){
-		        	var c = prompt("Por favor ingrese su contraseña");
-		        	if(c==pass){
-			          	var r = confirm("¿Desea eliminar el producto?");
-			          	if (!r) 
-			              	event.preventDefault();
-		            }else{
-		            	event.preventDefault();
-		            }
-		        }
-		    </script>';
-		}
-	}
-
 	#Vista de productos
 	#------------------------------------
+	#CRUD de los productos
 	public function productoDetallesController(){
 		if(isset($_POST['t'])){
+			$accion = $_POST['t']=="in"?"agrego":"retiro";
 			$datosController = array( 	
 									"id_producto"=>$_POST["id_producto"], 
 									"user_id"=>$_SESSION["user_id"], 
 									"fecha"=>date("Y-m-d H:i:s"), 
-									"nota"=>"El usuario ".$_SESSION["firstname"]." agrego ".$_POST['unidades']." producto(s) al inventario.",
+									"nota"=>"El usuario ".$_SESSION["name"]." ".$accion." ".$_POST['unidades']." producto(s) al inventario.",
 									"referencia"=>$_POST["referencia"], 
 									"cantidad"=>$_POST["unidades"]
 									);
@@ -128,16 +119,17 @@ class MvcController{
 			if(!$flag){
 				$respuesta = Datos::detallesMovimientoProductoModel($datosController, "historial");
 				$total = $cant_num+$r_num;
-				//var_dump($total);
+				
 				Datos::updateProductUnitsModel($_POST["id_producto"],$total, "products");
 			}else{
-				echo"<script>alert('No se pudo realizar la operacion debido a que no hay suficientes productos en el inventario');</script>";
+				echo"<script>swal('Error', 'No se pudo realizar la operacion debido a que no hay suficientes productos en el inventario', 'success');</script>";
 			}
 		}
 	}
 
 	#Vista de Producto
 	#------------------------------------
+	#Movimientos para el historial de productos
 	public function vistaProductoDetallesController(){
 		$id=$_GET['id'];
 
@@ -226,7 +218,8 @@ class MvcController{
 			    if(document.getElementById("referencia").value!="" && document.getElementById("unidades").value!=""  )
 			   		myForm.submit();
 			   	else
-			   		alert("ingrese todos los campos");
+			   		swal("Error", "Ingrese todos los campos", "error");
+			   		
 			}
 
 			function tipo(t) {
@@ -242,11 +235,12 @@ class MvcController{
 	    </script>';
 	}
 
-	#Vista de productos
+	#Vista de productos controlador
 	#------------------------------------
+	#Controla el procedimiento de los productos
 	public function vistaProductoController(){
-
-		$respuesta = Datos::vistaProductoModel("products");
+	
+		$respuesta = Datos::vistaProductoModel("products",$_SESSION['id_tienda']);
 
 		foreach($respuesta as $row => $item){
 		echo'<tr>
@@ -257,21 +251,29 @@ class MvcController{
 				<td>'.$item["precio_producto"].'</td>
 				<td>'.$item["stock"].'</td>
 				<td><a href="index.php?action=editar_producto&id='.$item["id_producto"].'"><button class="btn btn-block btn-warning">Editar</button></a></td>
-				<td><a href="index.php?action=inventario&idBorrar='.$item["id_producto"].'"><button onclick="wait();" class="btn btn-block btn btn-danger">Borrar</button></a></td>
+				<td><button onclick="wait();" class="btn btn-block btn btn-danger">Borrar</button></a></td>
 				<td><a href="index.php?action=producto_detalles&id='.$item["id_producto"].'"><button class="btn btn-block btn btn-primary">Detalles</button></a></td>
 			</tr>';
 		echo ' 
 			<script type="text/javascript">
 		        var pass="'.$_SESSION['user_p'].'";
 		        function wait(){
-		        	var c = prompt("Por favor ingrese su contraseña");
-		        	if(c==pass){
-			          	var r = confirm("¿Desea eliminar el producto?");
-			          	if (!r) 
-			              	event.preventDefault();
-		            }else{
-		            	event.preventDefault();
-		            }
+		        	swal("Ingrese su contraseña:", {
+					  	content: {
+						    element: "input",
+						    attributes: {
+						      placeholder: "Contraseña",
+						      type: "password",
+						    },
+						 },
+					})
+					.then((value) => {
+						if(value==pass){
+					  		window.location.href = "./index.php?action=inventario&idBorrar='.$item["id_producto"].'";
+					  	}else{
+					  		swal("Contraseña Incorrecta Intente de nuevo", {});
+					  	}
+					});
 		        }
 		    </script>';
 		}
@@ -279,6 +281,7 @@ class MvcController{
 
 	#Vista de categorias
 	#------------------------------------
+	#CRUD de las categorias
 	public function vistaCategoriaController(){
 
 		$respuesta = Datos::vistaCategoriaModel("categorias");
@@ -289,30 +292,108 @@ class MvcController{
 				<td>'.$item["descripcion_categoria"].'</td>
 				<td>'.$item["date_added"].'</td>
 				<td><a href="index.php?action=editar_categoria&id='.$item["id_categoria"].'"><button class="btn btn-block btn-warning btn-md">Editar</button></a></td>
-				<td><a href="index.php?action=categorias&idBorrar='.$item["id_categoria"].'"><button onClick="wait();" class="btn btn-block btn btn-danger btn-md">Borrar</button></a></td>
+				<td><button onClick="wait();" class="btn btn-block btn btn-danger btn-md">Borrar</button></a></td>
 			</tr>';
 		echo ' 
 			<script type="text/javascript">
 				var pass="'.$_SESSION['user_p'].'";
 		        function wait(){
-		        	var c = prompt("Por favor ingrese su contraseña");
-		        	if(c==pass){
-			          	var r = confirm("¿Desea eliminar el producto?");
-			          	if (!r) 
-			              	event.preventDefault();
-		            }else{
-		            	event.preventDefault();
-		            }
+		        	swal("Ingrese su contraseña:", {
+					  content: {
+						    element: "input",
+						    attributes: {
+						      placeholder: "Contraseña",
+						      type: "password",
+						    },
+						 },
+					})
+					.then((value) => {
+						if(value==pass){
+							swal({
+							  title: "¿Esta seguro que desea eliminar esta categoria?",
+							  text: "Al eliminar esta categoria tambien se eliminara todo producto que pertenezca a esta categoria y en el historial sera eliminado todo registro que tenga un producto con esta categoria",
+							  icon: "warning",
+							  buttons: true,
+							  dangerMode: true,
+							})
+							.then((willDelete) => {
+							  if (willDelete) {
+							    window.location.href = "./index.php?action=categorias&idBorrar='.$item["id_categoria"].'";
+							  }
+							});
+					  		
+					  	}else{
+					  		swal("Contraseña Incorrecta Intente de nuevo", {});
+					  	}
+					});
 		        }
 		    </script>';
 		}
 	}
 	
+
+	#Vista de tiendas
+	#------------------------------------
+	#CRUD de las tiendas, unicamente para superuser
+	public function vistaTiendasController(){
+
+		$respuesta = Datos::vistaTiendaModel("tienda");
+
+		
+		foreach($respuesta as $row => $item){
+			$estado_tienda = $item["activa"]=="0"?"Desactivada":"Activa";
+		echo'<tr>
+				<td>'.$item["id_tienda"].'</td>
+				<td>'.$item["nombre"].'</td>
+				<td>'.$estado_tienda.'</td>
+				<td><a href="index.php?action=editar_tienda&id='.$item["id_tienda"].'"><button class="btn btn-block btn-warning btn-md">Editar</button></a></td>
+				<td><button onclick="wait('.$item["id_tienda"].');" class="btn btn-block btn btn-danger btn-md">Borrar</button></a></td>
+				<td><a href="index.php?action=redirect&id='.$item["id_tienda"].'"><button class="btn btn-block btn-success btn-md">Ingresar</button></a></td>
+			</tr>';
+		echo ' 
+			<script type="text/javascript">
+		        var pass="'.$_SESSION['user_p'].'";
+		         function wait(user_id){
+		        	swal("Ingrese su contraseña:", {
+					  content: {
+						    element: "input",
+						    attributes: {
+						      placeholder: "Contraseña",
+						      type: "password",
+						    },
+						 },
+					})
+					.then((value) => {
+						if(value==pass){
+							swal({
+							  title: "¿Esta seguro que desea eliminar esta tienda?",
+							  text: "Al eliminar esta tienda se eliminaran todos los registros(usuarios, productos, categorias) de la misma permanentemente.",
+							  icon: "warning",
+							  buttons: true,
+							  dangerMode: true,
+							})
+							.then((willDelete) => {
+							 	if (willDelete) {
+					  				window.location.href = "./index.php?action=tiendas&idBorrar="+user_id;
+					  			}
+					  		});
+					  	}else{
+					  		swal("Contraseña Incorrecta Intente de nuevo", {});
+					  	}
+					});
+		        }
+		    </script>';
+		}
+	}
+
+
+
 	#Vista de usuarios
 	#------------------------------------
+	#CRUD de usuarios
 	public function vistaUsuarioController(){
 
-		$respuesta = Datos::vistaUsuarioModel("users");
+		$respuesta = Datos::vistaUsuarioModel("users",$_SESSION['id_tienda']);
 
 		foreach($respuesta as $row => $item){
 		echo'<tr>
@@ -323,20 +404,39 @@ class MvcController{
 				<td>'.$item["user_email"].'</td>
 				<td>'.$item["date_added"].'</td>
 				<td><a href="index.php?action=editar_usuario&id='.$item["user_id"].'"><button class="btn btn-block btn-warning btn-md">Editar</button></a></td>
-				<td><a href="index.php?action=usuarios&idBorrar='.$item["user_id"].'"><button onclick="wait();" class="btn btn-block btn btn-danger btn-md">Borrar</button></a></td>
+				<td><button onclick="wait('.$item["user_id"].');" class="btn btn-block btn btn-danger btn-md">Borrar</button></a></td>
 			</tr>';
 		echo ' 
 			<script type="text/javascript">
 		        var pass="'.$_SESSION['user_p'].'";
-		        function wait(){
-		        	var c = prompt("Por favor ingrese su contraseña");
-		        	if(c==pass){
-			          	var r = confirm("¿Desea eliminar el producto?");
-			          	if (!r) 
-			              	event.preventDefault();
-		            }else{
-		            	event.preventDefault();
-		            }
+		         function wait(user_id){
+		        	swal("Ingrese su contraseña:", {
+					  content: {
+						    element: "input",
+						    attributes: {
+						      placeholder: "Contraseña",
+						      type: "password",
+						    },
+						 },
+					})
+					.then((value) => {
+						if(value==pass){
+							swal({
+							  title: "¿Esta seguro que desea eliminar esta usuario?",
+							  text: "Al eliminar esta usuario tambien se eliminara todo registro en el historial relacionado con este usuario",
+							  icon: "warning",
+							  buttons: true,
+							  dangerMode: true,
+							})
+							.then((willDelete) => {
+							 	if (willDelete) {
+					  				window.location.href = "./index.php?action=usuarios&idBorrar="+user_id;
+					  			}
+					  		});
+					  	}else{
+					  		swal("Contraseña Incorrecta Intente de nuevo", {});
+					  	}
+					});
 		        }
 		    </script>';
 		}
@@ -345,61 +445,88 @@ class MvcController{
 
 	#BORRAR USUARIOS
 	#------------------------------------
+	#Permite el eliminar algun usuario
 	public function borrarUsuarioController(){
 
 		if(isset($_GET["idBorrar"])){
 			$datosController = $_GET["idBorrar"];
-
-
-			$respuesta = Datos::borrarUsuarioModel($datosController, "users");
 			
-			if($respuesta == "success"){
-				header("location:index.php?action=usuarios");
+			if($datosController!=$_SESSION['user_id']){
+				//$respuesta = Datos::BorrarColumnIdModel($datosController, "historial","user_id", $_SESSION['id_tienda']);
+				$respuesta = Datos::borrarUsuarioModel($datosController, "users");
+			
+				if($respuesta == "success"){
+					header("location:index.php?action=usuarios");
+				}else{
+					echo('<script> swal("Error", "El usuario no pudo ser eliminado", "error");</script>');
+				}
 			}else{
-				echo('<script> alert("El usuario no pudo ser eliminado</script>');
+				echo('<script> swal("Error", "No puede eliminar el usuario con el que tiene abierta la sesion", "error");</script>');
 			}
+		}
+	}
+
+	#BORRAR TIENDAS
+	#------------------------------------
+	#Permite el eliminar determinada tienda mediante su id
+	public function borrarTiendasController(){
+
+		if(isset($_GET["idBorrar"])){
+			$datosController = $_GET["idBorrar"];
+
+			$respuesta = Datos::borrarTiendaModel($datosController, "tienda");
+		
+			if($respuesta == "success"){
+				header("location:index.php?action=tiendas");
+			}else{
+				echo('<script> swal("Error", "La tienda no pudo ser eliminada", "error");</script>');
+			}
+			
 		}
 	}
 
 	#BORRAR PRODUCTO
 	#------------------------------------
+	#Permite el borrado de un producto
 	public function borrarProductoController(){
 
 		if(isset($_GET["idBorrar"])){
 			$datosController = $_GET["idBorrar"];
 
-			$respuesta = Datos::borrarProductoModel($datosController, "products");
+			$respuesta = Datos::borrarProductoModel($datosController, "products", $_SESSION['id_tienda']);
 			
 			if($respuesta == "success"){
 				header("location:index.php?action=inventario");
 			}else{
-				echo('<script> alert("El producto no pudo ser eliminado</script>');
+				echo('<script> swal("Error", "El producto no pudo ser eliminado", "error");</script>');
 			}
 		}
 	}
 
 
-	#BORRAR CATEGOIRIA
+	#BORRAR CATEGORIA
 	#------------------------------------
+	#Permite el borrado de una categoria
 	public function borrarCategoriaController(){
 
 		if(isset($_GET["idBorrar"])){
 			$datosController = $_GET["idBorrar"];
 
-			$respuesta = Datos::borrarProductsIdModel($datosController, "products");
+			
 			$respuesta = Datos::borrarCategoriaModel($datosController, "categorias");
 			
 			
 			if($respuesta == "success"){
 				header("location:index.php?action=categorias");
 			}else{
-				echo('<script> alert("El producto no pudo ser eliminado</script>');
+				echo('<script> swal("Error", "La categoria no pudo ser eliminada", "error");</script>');
 			}
 		}
 	}
 
 	#REGISTRO USUARIO
 	#------------------------------------
+	#Controla el registor de un usuario para hacer su incercion en la base de datos
 	public function registroUsuarioController(){
 
 		if(isset($_POST["firstname"])){
@@ -414,7 +541,6 @@ class MvcController{
 
 			
 			$respuesta = Datos::registroUsuarioModel($datosController, "users");
-			var_dump($respuesta);
 			
 			if($respuesta == "success"){
 				header("location:index.php?action=ok_usuario");
@@ -429,6 +555,7 @@ class MvcController{
 
 	#REGISTRO PRODUCTO
 	#------------------------------------
+	#Registro de producto en la base de datos
 	public function registroProductoController(){
 
 		if(isset($_POST["nombre_producto"])){
@@ -456,6 +583,7 @@ class MvcController{
 
 	#REGISTRO CATEOGRIA
 	#------------------------------------
+	#Registro de categoria en la base de datos
 	public function registroCategoriaController(){
 
 		if(isset($_POST["nombre_categoria"])){
@@ -467,7 +595,6 @@ class MvcController{
 
 			$respuesta = Datos::registroCategoriaModel($datosController, "categorias");
 			
-			var_dump($respuesta);
 			
 			if($respuesta == "success"){
 				header("location:index.php?action=ok_categoria");
@@ -479,10 +606,37 @@ class MvcController{
 		}
 
 	}
+	
 
-                    
+	#REGISTRO TIENDA
+	#------------------------------------
+	#Permite el registro de una tienda solo para superuser
+	public function registroTiendaController(){
+
+		if(isset($_POST["nombre"])){
+			$datosController = array(
+								      "nombre"=>$_POST["nombre"],
+								      "activa"=>$_POST["activa"]
+								  );
+
+			$respuesta = Datos::registroTiendaModel($datosController, "tienda");
+			
+			
+			if($respuesta == "success"){
+				header("location:index.php?action=ok_tienda");
+			}
+			else{
+				header("location:index.php");
+			}
+			
+		}
+
+	}
+
+     
 	#REGISTRO BASE PRODUCTO
 	#------------------------------------
+	#Interfaz base del registro de producto
 	public function registroBaseProductoController(){
 		$respuesta_categorias = Datos::obtenerCategoriasModel("categorias");
 
@@ -504,8 +658,9 @@ class MvcController{
 				  '.$st_categorias.'
 			 </select>
 
+			 <br><br>
 			 <div class="card-footer">
-			 	<input type="submit" class="btn btn-primary" onClick="wait()" value="Registrar">
+			 	<input type="submit" class="btn btn-primary float-right" onClick="wait()" value="Registrar">
 			 </div>';
 		echo"
 			<script>
@@ -532,10 +687,16 @@ class MvcController{
 				});
 
 				function wait(){
-		          if (!flag) {
-		          	alert('El codigo de producto que ingreso ya esta registrado para otro producto, por favor utilice otro');
-		            event.preventDefault();
-		          }
+		         
+		          	if (!flag) {
+		          		event.preventDefault();
+				        swal({
+							title: 'No se ha podido registrar el producto',
+							text: 'El codigo de producto ingresado ya esta registrado, por favor utilice otro codigo',
+							icon: 'warning',
+							buttons: true,
+						});
+					}
 		        }
 			</script>";
 
@@ -543,19 +704,48 @@ class MvcController{
 
 	#REGISTRO BASE CATEGORIA
 	#------------------------------------
+	#Interfaz base del registro de categorias
 	public function registroBaseCategoriaController(){
 		echo'<label for="nombre">Nombre:</label>
 			 <input class="form-control" type="text" name="nombre_categoria" required>
 			 <label for="nombre">Descripcion:</label>
 			 <input class="form-control" type="text" name="descripcion_categoria" required>
+			 <br>
 			 <div class="card-footer">
-			 	<input type="submit" class="btn btn-primary" value="Registrar">
+			 	<input type="submit" class="btn btn-primary float-right" value="Registrar">
 			 </div>';
 
 	}
 
+
+	#REGISTRO BASE TIENDA
+	#------------------------------------
+	#Interfaz base del registro de una tienda
+	public function registroBaseTiendaController(){
+		echo'<input type="hidden" value="" name="id_tienda">
+			 <label for="nombre">Nombre:</label>
+			 <input class="form-control" type="text" value="" name="nombre" required>
+
+			 <label for="descripcion">Activa:</label>
+			 <div class="row-fluid">
+			 	<label class="radio-inline">
+			  		<input class="d-inline form-control" type="radio" name="activa" value="1" checked> <span>Activada</span>
+			  	</label>
+			  	<label class="radio-inline">
+  			 		<input class="d-inline form-control" type="radio" name="activa" value="0" > Desactivado<br>
+  			 	</label>
+			</div>
+			 
+			 <div class="card-footer">
+			 	<input type="submit" class="btn btn-primary float-right" value="Registrar">
+			 </div>';
+
+	}
+
+
 	#REGISTRO BASE USUARIO
 	#------------------------------------
+	#Interfaz base del registro de un usuario
 	public function registroBaseUsuarioController(){
 		echo'<label for="nombre">Nombre:</label>
 			 <input class="form-control" type="text" name="firstname" required>
@@ -567,32 +757,17 @@ class MvcController{
 			 <input class="form-control" type="email" name="user_email" required>
 			 <label for="email">Password:</label>
 			 <input class="form-control" type="password" name="user_pass" required>
+			 <br>
 			 <div class="card-footer">
-			 	<input type="submit" class="btn btn-primary" value="Registrar">
+			 	<input type="submit" class="btn btn-primary float-right" value="Registrar">
 			 </div>';
 
 	}
 
-
-	#REGISTRO BASE DE USUARIO
-	#------------------------------------
-	public function registroUsuarioProductoController(){
-		echo'<label for="nombre">Nombre:</label>
-			 <input class="form-control" type="text" name="nombre" required>
-			 <label for="nombre">Apellido:</label>
-			 <input class="form-control" type="text" name="apellido" required>
-			 <label for="nombre">Email:</label>
-			 <input class="form-control" type="email" name="email" required>
-			 <label for="nombre">Agregado:</label>
-			 <input class="form-control" type="text" name="agregado" required>
-			 <div class="card-footer">
-			 	<input type="submit" class="btn btn-primary" value="Registrar">
-			 </div>';
-
-	}
 
 	#EDITAR CATEGORIAS
 	#------------------------------------
+	#Permite la edicion de categorias
 	public function editarCategoriaController(){
 		$datosController = $_GET["id"];
 		$respuesta = Datos::editarCategoriaModel($datosController, "categorias");
@@ -602,13 +777,74 @@ class MvcController{
 			 <input class="form-control" type="text" value="'.$respuesta["nombre_categoria"].'" name="nombre_categoria" required>
 			 <label for="descripcion">Descripcion:</label>
 			 <input class="form-control" type="text" value="'.$respuesta["descripcion_categoria"].'" name="descripcion_categoria" required>
+			 <br>
 			 <div class="card-footer">
-			 	<input type="submit" class="btn btn-primary" value="Actualizar">
+			 	<input type="submit" class="btn btn-primary float-right" value="Actualizar">
 			 </div>';
+	}
+
+
+	#EDITAR TIENDAS
+	#------------------------------------
+	#Permite la edicion de tiendas
+	public function editarTiendaController(){
+		$datosController = $_GET["id"];
+		$respuesta = Datos::editarTiendaModel($datosController, "tienda");
+		$checked_activado="";
+		$checked_desactivado="";
+
+		if($respuesta["activa"]=="1")
+			$checked_activado="checked";
+		else if($respuesta["activa"]=="0")
+			$checked_desactivado="checked";
+
+		echo'<input type="hidden" value="'.$respuesta["id_tienda"].'" name="id_tienda">
+			 <label for="nombre">Nombre:</label>
+			 <input class="form-control" type="text" value="'.$respuesta["nombre"].'" name="nombre" required>
+
+			 <label for="descripcion">Activa:</label>
+			 <div class="row-fluid">
+			 	<label class="radio-inline">
+			  		<input class="d-inline form-control" type="radio" name="activa" value="1" '.$checked_activado.'> <span>Activada</span>
+			  	</label>
+			  	<label class="radio-inline">
+  			 		<input class="d-inline form-control" type="radio" name="activa" value="0" '.$checked_desactivado.'> Desactivado<br>
+  			 	</label>
+			</div>
+			 
+  
+			 <br>
+			 <div class="card-footer">
+			 	<input type="submit" class="btn btn-primary float-right" value="Actualizar">
+			 </div>';
+	}
+
+	#ACTUALIZAR TIENDA
+	#------------------------------------
+	#Modificacion de tienda
+	public function actualizarTiendaController(){
+		
+		if(isset($_POST["id_tienda"])){
+			$datosController = array( "id_tienda"=>$_POST["id_tienda"],
+							          "nombre"=>$_POST["nombre"],
+							          "activa"=>$_POST["activa"]
+									);
+			var_dump($datosController);
+			$respuesta = Datos::actualizarTiendaModel($datosController, "tienda");
+			
+			
+			if($respuesta == "success"){
+				header("location:index.php?action=cambio_tienda");
+			}
+			else{
+				echo "error";
+			}
+		}
 	}
 
 	#ACTUALIZAR CATEGORIA
 	#------------------------------------
+	#Actualizacion de categorias
 	public function actualizarCategoriaController(){
 		if(isset($_POST["id_categoria"])){
 			$datosController = array( "id_categoria"=>$_POST["id_categoria"],
@@ -629,12 +865,13 @@ class MvcController{
 
 	#EDITAR PRODUCTO
 	#------------------------------------
+	#Permite la edicicion de producto
 	public function editarProductoController(){
 
 		$datosController = $_GET["id"];
-		$respuesta = Datos::editarProductoModel($datosController, "products");
+		$respuesta = Datos::editarProductoModel($datosController, "products", $_SESSION['id_tienda']);
 
-		$respuesta_categorias = Datos::obtenerCategoriasModel("categorias");
+		$respuesta_categorias = Datos::obtenerCategoriasModel("categorias",$_SESSION['id_tienda']);
 
 		$st_categorias="";
 		for($i=0;$i<sizeof($respuesta_categorias);$i++)
@@ -655,9 +892,9 @@ class MvcController{
 			 <select id="categorias" class="form-control js-example-basic-multiple" name="id_categoria">
 				  '.$st_categorias.'
 			 </select>
-
+			 <br><br>
 			 <div class="card-footer">
-			 	<input type="submit" class="btn btn-primary" onClick="wait();" value="Registrar">
+			 	<input type="submit" class="btn btn-primary float-right" onClick="wait();" value="Actualizar">
 			 </div>';
 		echo"
 			<script>
@@ -691,11 +928,17 @@ class MvcController{
 			        }
 				});
 
-				function wait(){
-		          if (!flag) {
-		          	alert('El codigo de producto que ingreso ya esta registrado para otro producto, por favor utilice otro');
-		            event.preventDefault();
-		          }
+
+				function wait(){	
+		          	if (!flag) {
+		          		event.preventDefault();
+				        swal({
+							title: 'No se ha podido actualizar el producto',
+							text: 'El codigo de producto ingresado ya esta registrado, por favor utilice otro codigo',
+							icon: 'warning',
+							buttons: true,
+						});
+					}
 		        }
 			</script>";
 
@@ -704,6 +947,7 @@ class MvcController{
 
 	#EDITAR USUARIO
 	#------------------------------------
+	#Permite la edicion de usuarios
 	public function editarUsuarioController(){
 
 		$datosController = $_GET["id"];
@@ -720,13 +964,15 @@ class MvcController{
 			 <input class="form-control" type="email" name="user_email" value="'.$respuesta["user_email"].'" required>
 			 <label for="email">Password:</label>
 			 <input class="form-control" type="password" name="user_pass" required>
+			 <br>
 			 <div class="card-footer">
-			 	<input type="submit" class="btn btn-primary" value="Registrar">
+			 	<input type="submit" class="btn btn-primary float-right" value="Registrar">
 			 </div>';
 	}
 
 	#ACTUALIZAR USUARIO
 	#------------------------------------
+	#Permite actualizar su usuario.
 	public function actualizarUsuarioController(){
 		if(isset($_POST["user_id"])){
 			$datosController = array( "user_id"=>$_POST["user_id"],
@@ -760,6 +1006,7 @@ class MvcController{
 
 	#ACTUALIZAR PRODUCTO
 	#------------------------------------
+	#Actualizacion de producto
 	public function actualizarProductoController(){
 		if(isset($_POST["id_producto"])){
 			$datosController = array( "id_producto"=>$_POST["id_producto"],
@@ -769,7 +1016,7 @@ class MvcController{
 							          "stock"=>$_POST["stock"],
 							          "id_categoria"=>$_POST["id_categoria"]
 										);
-			$respuesta = Datos::actualizarProductoModel($datosController, "products");
+			$respuesta = Datos::actualizarProductoModel($datosController, "products", $_SESSION['id_tienda']);
 			
 			if($respuesta == "success"){
 				header("location:index.php?action=cambio_producto");

@@ -9,8 +9,8 @@
 
 	<!-- Tell the browser to be responsive to screen width -->
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<!-- Font Awesome -->
-	<link rel="stylesheet" href="views/plugins/font-awesome/css/font-awesome.min.css">
+
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 	<!-- DataTables -->
   <link rel="stylesheet" href="views/plugins/datatables/dataTables.bootstrap4.css">
 	<!-- Ionicons -->
@@ -31,10 +31,8 @@
 	<link rel="stylesheet" href="views/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
 	<!-- Google Font: Source Sans Pro -->
 	<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
-	<!-- Font Awesome -->
-  <link rel="stylesheet" href="plugins/font-awesome/css/font-awesome.min.css">
   <!-- Ionicons -->
-  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <link rel="stylesheet" href="views/css/ionicons.min.css">
 
   <link rel="stylesheet" href="views/css/select2.min.css" />
   <script src="views/plugins/jquery/jquery.min.js"></script>
@@ -71,12 +69,14 @@
   <script src="views/plugins/fastclick/fastclick.js"></script>
   <!-- AdminLTE App -->
   <script src="views/dist/js/adminlte.js"></script>
-  <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-  <script src="views/dist/js/pages/dashboard.js"></script>
-  <!-- AdminLTE for demo purposes -->
+
+ 
   <script src="views/dist/js/demo.js"></script>
 
   <script src="views/js/select2.min.js"></script>
+
+  <script src="views/js/sweetalert.min.js"></script>
+
 </head>
 
 
@@ -87,17 +87,20 @@
 <section>
 <?php 
   ob_start();
-  
+
+
+  if(!isset($_GET['action']))
+    header("location:index.php?action=dashboard");
   if(isset($_GET['action']))
     if($_GET['action']!='ingresar' && $_GET['action']!='salir' && $_GET['action']!='fallo')
       include("modules/navegacion.php");
   
   $mvc = new MvcController();
-
   $mvc -> enlacesPaginasController();
+
  if(isset($_GET['action']))
    if($_GET['action']!='ingresar' && $_GET['action']!='salir' && $_GET['action']!='fallo')
-     include("footer.html");
+     include("footer.php");
   
   
 ?>
