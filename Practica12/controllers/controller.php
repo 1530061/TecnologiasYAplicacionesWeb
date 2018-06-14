@@ -381,7 +381,7 @@ class MvcController{
 	          </thead>
 	        </table>
 	       
-	        <table id="table" class="form-control " style="border: none; width:100%">
+	        <table id="table" class="table table-bordered table-striped">
 	          <thead>
 	            <tr>
 	              <th>Id</th>

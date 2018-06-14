@@ -1,6 +1,10 @@
 <?php
 	//Permite el redireccionar de entre la tienda superadmin a una tienda comun.
-	session_start();
+	if(!isset($_SESSION)) 
+	{ 
+	    session_start(); 
+	} 
+
 	$_SESSION['id_tienda']=$_GET['id'];
 	$_SESSION['sa']="1";
 

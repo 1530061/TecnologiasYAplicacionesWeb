@@ -345,6 +345,9 @@ class MvcController{
 
 		$mydate=getdate(date("U"));
 		echo ("$mydate[weekday], $mydate[month] $mydate[mday], $mydate[year]");
+
+		$r = Datos::getAvailabilityAllProductsModel("products");
+		
 		
 		echo('
 			<thead>
@@ -363,25 +366,26 @@ class MvcController{
 	                <input type="number" class="form-control" name="txt_cant" min="1" value="1" id="txt_cant">
 	              </td>
 	              <td style="width:50px;">
-	                 <button class="form-control id="btn_nu" value="Click" onclick="add_row()">Agregar</button>
+	                 <button class="form-control btn-success" id="btn_nu" value="Click" onclick="add_row()">Agregar</button>
 	              </td>
 	            </tr>
 	          </tbody>
 	        </table>
 	        <br><br>
 	        <h4 >Informacion de la venta:</h4>
-	        <table class="form-control " style="border: none; ">
-	          <thead>
-		            <tr>
-		              <th id="txt_total" >Total: 0</th>
-		              <th style="width:250px;">
-		                 <button class="form-control id="btn_terminar" style="height:60px" onclick="sendData();">Terminar Venta</button>
-		              </th>
-		            </tr>
-	          </thead>
-	        </table>
+	        
+	        <div class="row">
+	            <div class="col-md-6">
+	              <h1 id="txt_total">Total: 0</h1>
+	            </div>
+	            <div class="col-md-6">
+	                 <button class="form-control btn-danger" id="btn_terminar" style="height:60px" onclick="sendData();">Terminar Venta</button>
+	            </div>
+	        </div>
+	        <br>
+	          
 	       
-	        <table id="table" class="form-control " style="border: none; width:100%">
+	        <table id="table" class="table table-border table-striped" style="border: none; width:100%">
 	          <thead>
 	            <tr>
 	              <th>Id</th>
@@ -398,80 +402,163 @@ class MvcController{
 	        </table>');
 
 		echo('
-			 <script>
-			      var count=0;
-			      var details=[];
+			<script>
+			    var count=0;
+			      
+			    var json_data = '.json_encode($r).';
+				var result = [];
+				var details = [];
 
-			      //Funcion que permite añadir una nueva fila a la tabla del fondo, permitiendo tambien
-			      //agregar cantidades a los productos que ya se encuentran actualmente en la tabla.
-			      function add_row(){
-			        //Llamado de componentes
-			        var e = document.getElementById("sel_prod");
-			        var c = document.getElementById("txt_cant");
-			        var table = document.getElementById("tab_details");
-			        var txt_total = document.getElementById("txt_total");
+				for(var i in json_data)
+				 	result.push([i, json_data [i]]);
+				
+				console.log(result[0][1][1]);
 
-			        //Obteniendo todos los valores
-			        var split = e.options[e.selectedIndex].text.split("-");
-			        var id=split[0];
-			        var nombre=split[1];
-			        var cantidad = Number(c.value);
-			        var importe = e.options[e.selectedIndex].value*cantidad;
-			        var prom_unidad = importe/cantidad;
-
-			        var total=0;
-			        var found=false;
-			        //En caso de que ya exista, el registro existente se modifica y se agregan las cantidades
-			        for(var i=0;i<details.length;i++){
-			          if(details[i][0]==id){
-			            details[i][2]=details[i][2]+cantidad;
-			            details[i][4]=details[i][4]+importe;
-			            details[i][3]=details[i][4]/details[i][2];
-			            found=true;
-			          }
-			          total+=details[i][4];
-			        }
-			        if(!found)
-			          details.push([id,nombre,cantidad,prom_unidad, importe]);
-
-			        var new_row="";
+				//Funcion que permite añadir una nueva fila a la tabla del fondo, permitiendo tambien
+				//agregar cantidades a los productos que ya se encuentran actualmente en la tabla.
+				function add_row(){
 			        
-			        for(var i=0;i<details.length;i++){
-			          new_row=new_row+"<tr><td>"+details[i][0]+"</td><td>"+details[i][1]+"</td><td>"+details[i][2]+"</td><td>"+details[i][3]+"</td><td>"+details[i][4]+"</td></tr>";
-			        }
-			        
-			        table.innerHTML="";
-			        table.innerHTML=new_row;
-			        txt_total.innerHTML = "Total: "+total;
-			      }
+				    var e = document.getElementById("sel_prod");
+				    var c = document.getElementById("txt_cant");
+				    var table = document.getElementById("tab_details");
+				    var txt_total = document.getElementById("txt_total");
+	   
+				    var split = e.options[e.selectedIndex].text.split("-");
+				    var id=split[0];
+					var nombre=split[1];
+				    var cantidad = Number(c.value);
+				    var importe = e.options[e.selectedIndex].value*cantidad;
+				    var prom_unidad = importe/cantidad;
+
+				    c.value="1";
+				    var index_of=0;
+				        
+				    for(var i=0;i<result.length;i++){
+				    	if(Number(result[i][1][0])==Number(id)){
+				        	index_of=i;
+				        	break;
+						}
+				    }
+
+				    if(cantidad<=result[index_of][1][1]){
+				    	result[index_of][1][1]=result[index_of][1][1]-cantidad;
+					    var total=importe;
+					    var found=false;
+
+					    for(var i=0;i<details.length;i++){
+					        if(Number(details[i][0])==Number(id)){
+					        	details[i][2]=details[i][2]+cantidad;
+					            details[i][4]=details[i][4]+importe;
+					            details[i][3]=details[i][4]/details[i][2];
+					            found=true;
+					        }
+					        total+=details[i][4];
+					    }
+					    if(!found)
+					        details.push([id,nombre,cantidad,prom_unidad, importe]);
+
+						var new_row="";
+					    for(var i=0;i<details.length;i++){
+					        new_row=new_row+"<tr><td>"+details[i][0]+"</td><td>"+details[i][1]+"</td><td>"+details[i][2]+"</td><td>"+details[i][3]+"</td><td>"+details[i][4]+"</td></tr>";
+						}
+					        
+					    table.innerHTML="";
+					    table.innerHTML=new_row;
+					    txt_total.innerHTML = "Total: "+total;
+					}else{
+					    swal("Atencion", "Cantidad del producto en stock insuficiente para agregar a la venta, solo hay en existencia "+result[index_of][1][1]+" unidades", "error");
+					}
+				}
 
 			      	
 			        
-			      //Se envia la matriz que contiene la tabla por post a sale.php donde se continua con su guardado mediante PHP.
-			      var sendData = function() {
-			        if(details.length==0){
-			          alert("Por favor, ingrese algun producto en la venta primero");
-			        }else{
-			          var r = confirm("¿Cerrar esta venta?");
-			          if (!r) 
-			              event.preventDefault();
-			          else{
-			            $.post("views/modules/saving.php", {
-			              data: details
-			            }, function(data,status) {
-			            	console.log(data);
-			            });
-			            alert("Venta realizada exitosamente");
-			            //window.location.href = "views/modules/saving.php";
-			          }
+			    //Se envia la matriz que contiene la tabla por post a sale.php donde se continua con su guardado mediante PHP.
+			    var sendData = function() {
+			    if(details.length==0){
+			    	swal("Error", "Por favor, ingrese algun producto en la venta primero", "error");
+				}else{
+			        swal({
+						title: "Terminar esta venta?",
+						icon: "warning",
+						buttons: true
+						})
+						.then((willDelete) => {
+						 	if (willDelete) {
+				  				 $.post("views/modules/saving.php", {
+					              data: details
+					            }, function(data,status) {
+					            	console.log(data);
+					            });
+					            swal("Exito", "Venta realizada exitosamente", "success");
+					            window.location.href = "index.php?action=venta";
+				  			}else{
+				  				event.preventDefault();
+				  			}
+				  		});
 			        }
 			      }
 
 			      var doc = document.documentElement;
 			      doc.setAttribute("data-useragent", navigator.userAgent);
+
+			      var txt_cantidad = document.getElementById("txt_cant");
+				  txt_cantidad.addEventListener("keydown", function (e) {
+				    if (e.keyCode === 13) {  //checks whether the pressed key is "Enter"
+				         add_row();
+				    }
+				  });
     		</script>');
 	}
 
+
+	public function vistaHistorialVentaController(){
+		$respuesta = Datos::vistaTodasVentasModel("venta");
+		
+		foreach($respuesta as $row => $item){
+			echo'<tr>
+					<td>'.$item["id"].'</td>
+					<td>'.$item["fecha"].'</td>
+					<td>'.$item["total"].'</td>
+					<td><a href="index.php?action=detalles_venta&id='.$item["id"].'"><button class="btn btn-block btn-warning btn-md">Ver</button></a></td>
+			
+				</tr>';
+		}
+	}
+
+	public function vistaDetallesVentaController(){
+		if(isset($_GET['id'])){
+			$id = $_GET['id'];
+			$respuesta = Datos::vistaVentasModel("venta_producto",$id);
+			
+			foreach($respuesta as $row => $item){
+				echo'<tr>
+						<td>'.$item["id"].'</td>
+						<td>'.$item["codigo"].'</td>
+						<td>'.$item["nombre"].'</td>
+						<td>'.$item["cantidad"].'</td>
+						<td>'.$item["importe"].'</td>
+						
+					</tr>';
+			}
+		}
+	}
+
+	public function getNotificacionProducts(){
+		$respuesta = Datos::getNotificacionProductsModel("products");
+
+		foreach($respuesta as $row => $item){
+			echo'<a href="index.php?action=producto_detalles&id='.$item['id_producto'].'" class="dropdown-item" style="background-color:#17a2b8">
+	                <i class="ion ion-bag"></i>'.$item['nombre_producto'].' <span class="right badge badge-danger">'.$item['stock'].' unidades</span>
+	             </a>';
+		}
+	}
+
+	public function getCantidadNotificacion(){
+		
+		$respuesta = Datos::getCantidadNotificacions("products");
+		
+		return $respuesta[0];
+	}
 
 	#Vista de tiendas
 	#------------------------------------
@@ -1082,24 +1169,25 @@ class MvcController{
 									);
 
 			$respuesta = Datos::insertarProductosDeVenta($datosController, "venta_producto");
+
+			$datosController = array( 	
+									"id_producto"=>$d[$i][0],
+									"user_id"=>$_SESSION["user_id"], 
+									"fecha"=>date("Y-m-d H:i:s"), 
+									"nota"=>"El usuario ".$_SESSION["name"]." vendio ".$d[$i][2]." unidades del producto.",
+									"referencia"=>"000001", 
+									"cantidad"=>$d[$i][2]
+									);
+			
+			$respuesta = Datos::detallesMovimientoProductoModel($datosController, "historial");
+
+			$r = Datos::getAvailabilityProductModel($d[$i][0],"products");
+			$total = intval($r)-$d[$i][2];
+				
+			Datos::updateProductUnitsModel($d[$i][0],$total, "products");
 		}
 
-		if(isset($_POST["id_tienda"])){
-			$datosController = array( "id_tienda"=>$_POST["id_tienda"],
-							          "nombre"=>$_POST["nombre"],
-							          "activa"=>$_POST["activa"]
-									);
-			var_dump($datosController);
-			$respuesta = Datos::actualizarTiendaModel($datosController, "tienda");
-			
-			
-			if($respuesta == "success"){
-				header("location:index.php?action=cambio_tienda");
-			}
-			else{
-				echo "error";
-			}
-		}
+		
 	}
 
 	#ACTUALIZAR CATEGORIA

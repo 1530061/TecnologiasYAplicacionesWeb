@@ -1,6 +1,10 @@
 <?php
 
-session_start();
+if(!isset($_SESSION)) 
+{ 
+    session_start(); 
+} 
+
 
 if(!$_SESSION["validar"]){
 	header("location:index.php?action=ingresar");

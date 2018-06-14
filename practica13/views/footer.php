@@ -91,7 +91,15 @@
                 <a href="?action=venta" class="nav-link">
                   <i class="nav-icon fa fa-tags"></i>
                   <p>
-                    Venta
+                    Realizar Venta
+                  </p>
+                </a>
+              </li>
+              <li>
+                <a href="?action=historial_venta" class="nav-link">
+                  <i class="nav-icon fa fa-tags"></i>
+                  <p>
+                    Historial de Venta
                   </p>
                 </a>
               </li>

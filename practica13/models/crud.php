@@ -49,6 +49,59 @@ class Datos extends Conexion{
 		$stmt->close();
 	}
 
+	public function getNotificacionProductsModel(){
+		$stmt = Conexion::conectar()->prepare("SELECT id_producto, nombre_producto, stock FROM products WHERE stock<5 AND id_tienda=:id_tienda");	
+
+		$stmt->bindParam(":id_tienda", $_SESSION['id_tienda'], PDO::PARAM_INT);
+		$stmt->execute();
+ 
+		return $stmt->fetchAll();
+
+		$stmt->close();
+	}
+
+	
+	#VISTA HISTORIAL
+	#-------------------------------------
+	#Muestra una tabla con el historial.
+	public function vistaVentasModel($tabla, $id){
+		$stmt = Conexion::conectar()->prepare("SELECT p.id_producto as id, p.codigo_producto as codigo, p.nombre_producto as nombre, vp.cantidad as cantidad, vp.importe as importe FROM venta_producto as vp INNER JOIN products as P on p.id_producto=vp.id_producto WHERE id_tienda = :id_tienda AND id_venta=:id_venta");	
+
+		$stmt->bindParam(":id_tienda", $_SESSION['id_tienda'], PDO::PARAM_INT);
+		$stmt->bindParam(":id_venta", $id, PDO::PARAM_INT);
+		$stmt->execute();
+ 
+		return $stmt->fetchAll();
+
+		$stmt->close();
+	}
+
+	public function getCantidadNotificacions($tabla){
+		$stmt = Conexion::conectar()->prepare("SELECT COUNT(*) FROM $tabla WHERE stock<5 AND id_tienda = :id_tienda");
+		$stmt->bindParam(":id_tienda", $_SESSION['id_tienda'], PDO::PARAM_INT);
+		$stmt->execute();
+
+		return $stmt->fetch();
+
+		$stmt->close();
+	}
+
+	#VISTA HISTORIAL
+	#-------------------------------------
+	#Muestra una tabla con el historial.
+	public function vistaTodasVentasModel($tabla){
+		$stmt = Conexion::conectar()->prepare("SELECT id, fecha, total FROM $tabla WHERE id_tienda = :id_tienda");	
+
+		$stmt->bindParam(":id_tienda", $_SESSION['id_tienda'], PDO::PARAM_INT);
+		$stmt->execute();
+ 
+
+		return $stmt->fetchAll();
+
+		$stmt->close();
+	}
+
+
 	#VISTA PRODUCTO DETALLES
 	#-------------------------------------
 	#Muestra una vista con los detalles del producto
@@ -144,6 +197,7 @@ class Datos extends Conexion{
 		$stmt->bindParam(":cantidad", $datosModel["cantidad"], PDO::PARAM_INT);
 		$stmt->bindParam(":importe", $datosModel["importe"], PDO::PARAM_STR);
 		
+
 		if($stmt->execute()){
 			return "success";
 		}
@@ -157,10 +211,12 @@ class Datos extends Conexion{
 	#-------------------------------------
 	public function insertarVenta($datosModel, $tabla){
 
-		$stmt = Conexion::conectar()->prepare("INSERT INTO $tabla (fecha, total) VALUES (:fecha, :total)");	
+		$stmt = Conexion::conectar()->prepare("INSERT INTO $tabla (fecha, total, id_tienda) VALUES (:fecha, :total, :id_tienda)");	
 
 		$stmt->bindParam(":fecha", $datosModel["fecha"], PDO::PARAM_STR);
 		$stmt->bindParam(":total", $datosModel["total"], PDO::PARAM_STR);
+		$stmt->bindParam(":id_tienda", $_SESSION["id_tienda"], PDO::PARAM_INT);
+
 		
 		if($stmt->execute()){
 			return "success";
@@ -281,6 +337,7 @@ class Datos extends Conexion{
 			return "success";
 		}
 		else{
+			print_r($stm1->errorInfo());
 			return "error";
 		}
 
@@ -311,6 +368,18 @@ class Datos extends Conexion{
 		$stmt->execute();
 
 		return $stmt->fetch()['stock'];
+
+		$stmt->close();
+	}
+
+		public function getAvailabilityAllProductsModel($table){
+
+		$stmt = Conexion::conectar()->prepare("SELECT id_producto, stock FROM $table WHERE id_tienda=:id_tienda");	
+		$stmt->bindParam(":id_tienda", $_SESSION['id_tienda'], PDO::PARAM_INT);	
+	
+		$stmt->execute();
+
+		return $stmt->fetchAll();
 
 		$stmt->close();
 	}

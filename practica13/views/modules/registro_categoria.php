@@ -1,5 +1,9 @@
 <?php
-session_start();
+if(!isset($_SESSION)) 
+{ 
+    session_start(); 
+} 
+
 
 if(isset($_SESSION['id_tienda']))
     if($_SESSION['id_tienda']=='1'){
