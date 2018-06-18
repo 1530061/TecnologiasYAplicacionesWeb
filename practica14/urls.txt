@@ -1,0 +1,21 @@
+#Server:
+http://159.65.225.120/practica14/index.php
+
+#Github:
+https://github.com/1530061/TecnologiasYAplicacionesWeb/tree/master/practica14
+
+#Drive:
+https://drive.google.com/file/d/1ontWsajXlDWZT0wSA7i-NzuVs98kBtxe/view?usp=sharing
+
+#Cuentas de Acceso:
+-Usuario: admin
+-Password: admin
+
+-Usuario: walmart
+-Password: walmart
+
+#Modificaciones:
+Se implemento la posiblidad de hacer reportes en .pdf, .csv y .xlsx para las interfaces
+historial de ventas y detalles de ventas.
+
+

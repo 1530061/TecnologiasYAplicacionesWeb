@@ -1,9 +1,0 @@
-Github:
-https://github.com/1530061/TecnologiasYAplicacionesWeb/tree/master/practica13
-
-Servidor:
-http://159.65.225.120/practica13/index.php?action=ingresar
-
-Drive:
-https://drive.google.com/file/d/1sXZl9jSMQjp4kZ6hd-_Kq1VH3HoT1uqG/view?usp=sharing
-

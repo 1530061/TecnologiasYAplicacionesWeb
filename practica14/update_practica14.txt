@@ -1,3 +1,0 @@
-1. Se implemento la posiblidad de hacer reportes en .pdf, .csv y .xlsx para las interfaces
-historial de ventas y detalles de ventas.
-
