@@ -511,6 +511,8 @@ class MvcController{
 	}
 
 
+
+
 	public function vistaHistorialVentaController(){
 		$respuesta = Datos::vistaTodasVentasModel("venta");
 		

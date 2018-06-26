@@ -1,0 +1,21 @@
+Base de datos:
+Nombre:		inventarios.sql
+
+Cuentas guardadas en el sistema con valores de prueba:
+
+###Superadmin
+usuario:	admin
+contraseña:	admin
+
+###Walmart
+usuario:	walmart
+contraseña:	walmart
+
+###Soriana
+usuario:	soriana
+contraseña:	soriana
+
+###Mega(desactivada)
+usuario:	mega
+contraseña:	mega
+
