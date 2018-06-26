@@ -1,0 +1,12 @@
+Servidor:
+http://159.65.225.120/examenU2/
+
+Drive:
+https://drive.google.com/file/d/1gcfDQZBqj33vhXD9Iq4qQl7sSLNZQrn5/view?usp=sharing
+
+GitHub:
+https://github.com/1530061/TecnologiasYAplicacionesWeb/tree/master/examenU2
+
+Acceso:
+usuario:	admin
+password:	admin

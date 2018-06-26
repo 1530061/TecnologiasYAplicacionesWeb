@@ -241,8 +241,8 @@ class Datos extends Conexion{
 	#Permite la modificacion al obtener los valores de un pago actualmente que posteriormente seran usados en la interfaz
 	public function editarPagosModel($datosModel, $tabla){
 
-		$stmt = Conexion::conectar()->prepare("SELECT a.id_grupo as id_grupo, p.id_pago as id_pago, p.id_alumna as id_alumna, p.nombre_mama as nombre_mama, p.fecha_pago as fecha_pago, p.fecha_envio as fecha_envio, p.url_imagen as url_imagen, p.folio as folio FROM $tabla as p INNER JOIN alumnas as A on a.id=p.id_alumna WHERE p.id_pago = :id_pago");	
-		$stmt->bindParam(":id_pago", $datosModel, PDO::PARAM_INT);
+		$stmt = Conexion::conectar()->prepare("SELECT a.id_grupo as id_grupo, p.id_pago as id_pago, p.id_alumna as id_alumna, p.nombre_mama as nombre_mama, p.fecha_pago as fecha_pago, p.fecha_envio as fecha_envio, p.url_imagen as url_imagen, p.folio as folio FROM $tabla as p INNER JOIN alumnas as a on a.id=p.id_alumna WHERE p.id_pago = :id_pago");	
+		$stmt->bindParam(":id_pago", $datosModel, PDO::PARAM_INT);	
 
 		$stmt->execute();
 
